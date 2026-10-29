@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -29,34 +28,51 @@ st.set_page_config(
 # ==========================================
 
 require_login()
-logout_button()
 
 
 # ==========================================
-# CUSTOM CSS
+# CUSTOM CSS (METRIC CARDS & THEME FIX)
 # ==========================================
 
-# Option A: Keep white cards, make numbers dark and visible
 st.markdown("""
 <style>
-    .metric-card {
-        background-color: #ffffff;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Style Streamlit's native metric containers as high-contrast cards */
+    div[data-testid="stMetric"] {
+        background-color: #1e293b !important;
+        border: 1px solid #334155 !important;
+        padding: 18px !important;
+        border-radius: 10px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    /* Make metric label crystal clear */
+    div[data-testid="stMetricLabel"] p {
+        color: #94a3b8 !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Make metric numbers bold white and easily readable */
+    div[data-testid="stMetricValue"] div {
+        color: #f8fafc !important;
+        font-size: 28px !important;
+        font-weight: 700 !important;
+    }
+
+    .dashboard-subtitle {
+        color: #94a3b8;
+        font-size: 16px;
+        margin-top: -10px;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-footer {
         text-align: center;
-    }
-    .metric-title {
-        color: #475569 !important;
-        font-size: 14px;
-        font-weight: 500;
-        margin-bottom: 8px;
-    }
-    .metric-value {
-        color: #0f172a !important; /* Force dark bold color */
-        font-size: 28px;
-        font-weight: 700;
-        margin: 0;
+        color: #64748b;
+        font-size: 13px;
+        margin-top: 50px;
+        padding-top: 20px;
+        border-top: 1px solid #334155;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -66,34 +82,25 @@ st.markdown("""
 # SIDEBAR
 # ==========================================
 
+logout_button()
+
 st.sidebar.title("🎓 StudentHub Pro")
-
-
-st.sidebar.title("🎓 StudentHub Pro")
-
 st.sidebar.divider()
 
-st.sidebar.success(
-    "Administrator authenticated"
-)
+st.sidebar.success("Administrator authenticated")
 
-st.sidebar.markdown(
-    """
-    ### 📌 Navigation
+st.sidebar.markdown("### 📌 Navigation")
 
-    Use the sidebar pages to access:
-
-    - Student Management
-    - Course Management
-    - Marks Management
-    """
-)
+# Interactive, clickable navigation buttons
+st.sidebar.page_link("app.py", label="Dashboard Overview", icon="📊")
+st.sidebar.page_link("pages/Student_Management.py", label="Student Management", icon="👨‍🎓")
+st.sidebar.page_link("pages/Course_Management.py", label="Course Management", icon="📚")
+st.sidebar.page_link("pages/Marks_Management.py", label="Marks Management", icon="📝")
 
 st.sidebar.divider()
 
 st.sidebar.info(
-    "Manage student records and monitor academic performance "
-    "from one dashboard."
+    "Manage student records and monitor academic performance from one dashboard."
 )
 
 
@@ -151,7 +158,6 @@ col4.metric(
     value=f"{stats['pass_percentage']:.1f}%"
 )
 
-
 st.divider()
 
 
@@ -162,19 +168,14 @@ st.divider()
 st.subheader("📈 Student Analytics")
 
 if students:
-
     df = pd.DataFrame(students)
-
     left_col, right_col = st.columns(2)
 
     # --------------------------------------
     # DEPARTMENT DISTRIBUTION
     # --------------------------------------
-
     with left_col:
-
         st.markdown("#### 🏫 Department-wise Students")
-
         department_counts = (
             df.groupby("department")
             .size()
@@ -207,11 +208,8 @@ if students:
     # --------------------------------------
     # YEAR-WISE DISTRIBUTION
     # --------------------------------------
-
     with right_col:
-
         st.markdown("#### 📚 Year-wise Students")
-
         year_counts = (
             df.groupby("year")
             .size()
@@ -244,11 +242,9 @@ if students:
         )
 
 else:
-
     st.info(
         "No student records are available yet. "
-        "Open Student Management from the sidebar to register "
-        "your first student."
+        "Open Student Management from the sidebar to register your first student."
     )
 
 
@@ -262,7 +258,6 @@ st.divider()
 st.subheader("📝 Academic Performance")
 
 with get_connection() as conn:
-
     marks_df = pd.read_sql_query(
         """
         SELECT
@@ -279,17 +274,13 @@ with get_connection() as conn:
         conn
     )
 
-
 if not marks_df.empty:
-
     col1, col2 = st.columns(2)
 
     # --------------------------------------
     # AVERAGE MARKS BY DEPARTMENT
     # --------------------------------------
-
     with col1:
-
         department_performance = (
             marks_df.groupby("department")["marks"]
             .mean()
@@ -321,9 +312,7 @@ if not marks_df.empty:
     # --------------------------------------
     # MARKS DISTRIBUTION
     # --------------------------------------
-
     with col2:
-
         marks_chart = px.histogram(
             marks_df,
             x="marks",
@@ -347,10 +336,8 @@ if not marks_df.empty:
         )
 
 else:
-
     st.info(
-        "Academic charts will appear after you enter marks "
-        "in the Marks Management page."
+        "Academic charts will appear after you enter marks in the Marks Management page."
     )
 
 
@@ -364,9 +351,7 @@ st.divider()
 st.subheader("👨‍🎓 Recent Student Registrations")
 
 if students:
-
     recent_students = pd.DataFrame(students)
-
     recent_students = recent_students[
         [
             "roll_number",
@@ -394,10 +379,7 @@ if students:
     )
 
 else:
-
-    st.write(
-        "Student registrations will appear here once you add students."
-    )
+    st.write("Student registrations will appear here once you add students.")
 
 
 st.divider()
@@ -410,7 +392,6 @@ st.divider()
 st.subheader("🏆 Top Student Performers")
 
 if not marks_df.empty:
-
     student_averages = (
         marks_df.groupby(
             ["roll_number", "name", "department"]
@@ -442,10 +423,7 @@ if not marks_df.empty:
     )
 
 else:
-
-    st.info(
-        "Top performers will appear when student marks are available."
-    )
+    st.info("Top performers will appear when student marks are available.")
 
 
 # ==========================================
@@ -461,4 +439,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
