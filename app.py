@@ -1,9 +1,9 @@
-
+```python
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-from  database import (
+from database import (
     get_all_students,
     get_dashboard_stats,
     get_connection
@@ -36,43 +36,82 @@ logout_button()
 # CUSTOM CSS
 # ==========================================
 
+st.markdown(
+    """
+    <style>
+        .block-container {
+            padding-top: 1.5rem;
+            padding-bottom: 2rem;
+        }
 
-# Option A: Keep white cards, make numbers dark and visible
-st.markdown("""
-<style>
-    .metric-card {
-        background-color: #ffffff;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
-    .metric-title {
-        color: #475569 !important;
-        font-size: 14px;
-        font-weight: 500;
-        margin-bottom: 8px;
-    }
-    .metric-value {
-        color: #0f172a !important; /* Force dark bold color */
-        font-size: 28px;
-        font-weight: 700;
-        margin: 0;
-    }
-</style>
-""", unsafe_allow_html=True)
+        [data-testid="stMetric"] {
+            background-color: #f0f4f8;
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid #d9e2ec;
+        }
+
+        [data-testid="stMetricLabel"] {
+            color: #334e68;
+            font-weight: 600;
+        }
+
+        h1, h2, h3 {
+            color: #17365d;
+        }
+
+        .dashboard-subtitle {
+            color: #627d98;
+            font-size: 17px;
+        }
+
+        .dashboard-footer {
+            text-align: center;
+            color: #829ab1;
+            padding: 20px;
+            font-size: 13px;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 # ==========================================
 # SIDEBAR
 # ==========================================
+
 st.sidebar.title("🎓 StudentHub Pro")
+
+
 st.sidebar.title("🎓 StudentHub Pro")
+
 st.sidebar.divider()
-st.sidebar.success( "Administrator authenticated" )
-st.sidebar.markdown("### 📌 Navigation")
-st.sidebar.page_link("app.py", label="Dashboard Overview", icon="📊")
-st.sidebar.page_link("Student_Management.py", label="Student Management", icon="👨‍🎓")
-st.sidebar.divider() 
-st.sidebar.info( "Manage student records and monitor academic performance " "from one dashboard." )
+
+st.sidebar.success(
+    "Administrator authenticated"
+)
+
+st.s
+idebar.markdown(
+    """
+    ### 📌 Navigation
+
+    Use the sidebar pages to access:
+
+    - Student Management
+    - Course Management
+    - Marks Management
+    """
+)
+
+st.sidebar.divider()
+
+st.sidebar.info(
+    "Manage student records and monitor academic performance "
+    "from one dashboard."
+)
+
 
 # ==========================================
 # DASHBOARD HEADER
@@ -90,11 +129,7 @@ st.markdown(
 )
 
 st.divider()
-st.sidebar.markdown("### 📌 Navigation")
-st.sidebar.page_link("app.py", label="Dashboard Overview", icon="📊")
-st.sidebar.page_link("pages/Student_Management.py", label="Student Management", icon="👨‍🎓")
-st.sidebar.page_link("pages/Course_Management.py", label="Course Management", icon="📚")
-st.sidebar.page_link("pages/Marks_Management.py", label="Marks Management", icon="📝")
+
 
 # ==========================================
 # LOAD DATABASE STATISTICS
@@ -442,4 +477,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
+```
