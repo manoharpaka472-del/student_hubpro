@@ -1,3 +1,10 @@
+import streamlit as st
+from auth import require_login, logout_button
+
+# Check authentication on every page
+require_login()
+logout_button()
+
 import re
 
 import pandas as pd
