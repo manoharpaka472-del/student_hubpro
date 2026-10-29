@@ -91,6 +91,39 @@ st.sidebar.info("Manage student records and monitor academic performance from on
 # ==========================================
 # PAGE ROUTING LOGIC
 # ==========================================
+# ==========================================
+# PAGE ROUTING HELPER & LOGIC
+# ==========================================
+
+import os
+
+def render_page(filename_variations):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = []
+    
+    # Check both root and pages/ folder for all filename variations
+    for fname in filename_variations:
+        candidates.append(os.path.join(current_dir, "pages", fname))
+        candidates.append(os.path.join(current_dir, fname))
+        candidates.append(os.path.join("pages", fname))
+        candidates.append(fname)
+        
+    found_path = None
+    for path in candidates:
+        if os.path.exists(path):
+            found_path = path
+            break
+
+    if found_path:
+        with open(found_path, "r", encoding="utf-8") as f:
+            code = f.read()
+            # Execute the page script directly in the current context
+            exec(code, globals())
+    else:
+        pages_folder = os.path.join(current_dir, "pages")
+        available = os.listdir(pages_folder) if os.path.exists(pages_folder) else "pages directory not found"
+        st.error(f"Could not locate file: {filename_variations[0]}. Available files in pages/: {available}")
+
 
 # 1. DASHBOARD OVERVIEW PAGE
 if st.session_state.current_page == "Dashboard Overview":
@@ -166,42 +199,30 @@ if st.session_state.current_page == "Dashboard Overview":
         recent.columns = ["Roll Number", "Student Name", "Email", "Department", "Year"]
         st.dataframe(recent, use_container_width=True, hide_index=True)
 
+
 # 2. STUDENT MANAGEMENT PAGE
 elif st.session_state.current_page == "Student Management":
-    try:
-        from pages.Student_Management import *
-    except ModuleNotFoundError:
-        import importlib.util
-        import os
-        page_path = os.path.join(os.path.dirname(__file__), "pages", "Student_Management.py")
-        if os.path.exists(page_path):
-            with open(page_path, encoding="utf-8") as f:
-                exec(f.read())
-        else:
-            st.error("Could not locate Student_Management.py in the pages directory.")
+    render_page([
+        "Student_Management.py",
+        "1_Student_Management.py",
+        "3_Student_Management.py"
+    ])
+
 
 # 3. COURSE MANAGEMENT PAGE
 elif st.session_state.current_page == "Course Management":
-    try:
-        from pages.Course_Management import *
-    except ModuleNotFoundError:
-        import os
-        page_path = os.path.join(os.path.dirname(__file__), "pages", "Course_Management.py")
-        if os.path.exists(page_path):
-            with open(page_path, encoding="utf-8") as f:
-                exec(f.read())
-        else:
-            st.error("Could not locate Course_Management.py in the pages directory.")
+    render_page([
+        "Course_Management.py",
+        "1_Course_Management.py",
+        "2_Course_Management.py"
+    ])
+
 
 # 4. MARKS MANAGEMENT PAGE
 elif st.session_state.current_page == "Marks Management":
-    try:
-        from pages.Marks_Management import *
-    except ModuleNotFoundError:
-        import os
-        page_path = os.path.join(os.path.dirname(__file__), "pages", "Marks_Management.py")
-        if os.path.exists(page_path):
-            with open(page_path, encoding="utf-8") as f:
-                exec(f.read())
-        else:
-            st.error("Could not locate Marks_Management.py in the pages directory.")
+    render_page([
+        "Marks_Management.py",
+        "2_Marks_Management.py",
+        "3_Marks_Management.py"
+    ])
+
