@@ -31,12 +31,12 @@ require_login()
 
 
 # ==========================================
-# CUSTOM CSS (METRIC CARDS & THEME FIX)
+# CUSTOM CSS (Fix Invisible Metric Text & Cards)
 # ==========================================
 
 st.markdown("""
 <style>
-    /* Style Streamlit's native metric containers as high-contrast cards */
+    /* Metric container styling */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
         border: 1px solid #334155 !important;
@@ -45,16 +45,16 @@ st.markdown("""
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
     }
     
-    /* Make metric label crystal clear */
+    /* Metric labels (Titles) */
     div[data-testid="stMetricLabel"] p {
         color: #94a3b8 !important;
         font-size: 14px !important;
         font-weight: 600 !important;
     }
     
-    /* Make metric numbers bold white and easily readable */
+    /* Metric values (Numbers/Stats) */
     div[data-testid="stMetricValue"] div {
-        color: #f8fafc !important;
+        color: #ffffff !important;
         font-size: 28px !important;
         font-weight: 700 !important;
     }
@@ -82,130 +82,17 @@ st.markdown("""
 # SIDEBAR
 # ==========================================
 
+logout_button()
 
-import streamlit as st
-import pandas as pd
-import plotly.express as px
+st.sidebar.divider()
+st.sidebar.success("Administrator authenticated")
+st.sidebar.divider()
 
-from database import (
-    get_all_students,
-    get_dashboard_stats,
-    get_connection
+st.sidebar.info(
+    "Manage student records and monitor academic performance from one dashboard."
 )
 
-from auth import require_login, logout_button
 
-
-# ==========================================
-# PAGE DEFINITIONS & NAVIGATION
-# ==========================================
-
-# 1. Define the dashboard page function
-def dashboard_view():
-    st.title("🎓 StudentHub Pro")
-    st.markdown(
-        """
-        <p class="dashboard-subtitle">
-            Smart Student Management & Academic Analytics
-        </p>
-        """,
-        unsafe_allow_html=True
-    )
-    st.divider()
-
-    # Load statistics
-    stats = get_dashboard_stats()
-    students = get_all_students()
-
-    # Dashboard Metrics
-    st.subheader("📊 Dashboard Overview")
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("👨‍🎓 Total Students", stats["total_students"])
-    col2.metric("🏫 Departments", stats["total_departments"])
-    col3.metric("📈 Average Marks", f"{stats['average_marks']:.2f}%")
-    col4.metric("✅ Subject Pass Rate", f"{stats['pass_percentage']:.1f}%")
-
-    st.divider()
-
-    # Student Analytics Charts
-    st.subheader("📈 Student Analytics")
-    if students:
-        df = pd.DataFrame(students)
-        left_col, right_col = st.columns(2)
-        with left_col:
-            st.markdown("#### 🏫 Department-wise Students")
-            dep_counts = df.groupby("department").size().reset_index(name="Students")
-            fig_dep = px.bar(dep_counts, x="department", y="Students", color="department")
-            fig_dep.update_layout(showlegend=False)
-            st.plotly_chart(fig_dep, use_container_width=True)
-
-        with right_col:
-            st.markdown("#### 📚 Year-wise Students")
-            yr_counts = df.groupby("year").size().reset_index(name="Students")
-            fig_yr = px.bar(yr_counts, x="year", y="Students")
-            st.plotly_chart(fig_yr, use_container_width=True)
-    else:
-        st.info("No student records are available yet.")
-
-    st.divider()
-
-    # Academic Performance
-    st.subheader("📝 Academic Performance")
-    with get_connection() as conn:
-        marks_df = pd.read_sql_query(
-            """
-            SELECT s.roll_number, s.name, s.department, m.subject, m.marks
-            FROM marks m
-            INNER JOIN students s ON s.id = m.student_id
-            ORDER BY s.name
-            """,
-            conn
-        )
-
-    if not marks_df.empty:
-        c1, c2 = st.columns(2)
-        with c1:
-            dep_perf = marks_df.groupby("department")["marks"].mean().reset_index()
-            fig_perf = px.bar(dep_perf, x="department", y="marks", color="department")
-            fig_perf.update_layout(showlegend=False, yaxis_range=[0, 100])
-            st.plotly_chart(fig_perf, use_container_width=True)
-
-        with c2:
-            fig_dist = px.histogram(marks_df, x="marks", nbins=10)
-            fig_dist.update_layout(xaxis_range=[0, 100])
-            st.plotly_chart(fig_dist, use_container_width=True)
-    else:
-        st.info("Academic charts will appear after you enter marks.")
-
-    st.divider()
-
-    # Recent Students Table
-    st.subheader("👨‍🎓 Recent Student Registrations")
-    if students:
-        recent = pd.DataFrame(students)[["roll_number", "name", "email", "department", "year"]].head(10)
-        recent.columns = ["Roll Number", "Student Name", "Email", "Department", "Year"]
-        st.dataframe(recent, use_container_width=True, hide_index=True)
-
-    st.markdown(
-        """
-        <div class="dashboard-footer">
-            StudentHub Pro | Smart Student Management System
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-# 2. Register all pages
-dashboard_page = st.Page(dashboard_view, title="Dashboard Overview", icon="📊", default=True)
-student_page = st.Page("pages/Student_Management.py", title="Student Management", icon="👨‍🎓")
-course_page = st.Page("pages/Course_Management.py", title="Course Management", icon="📚")
-marks_page = st.Page("pages/Marks_Management.py", title="Marks Management", icon="📝")
-
-# 3. Initialize Navigation
-pg = st.navigation({
-    "Overview": [dashboard_page],
-    "Management": [student_page, course_page, marks_page]
-})
 # ==========================================
 # DASHBOARD HEADER
 # ==========================================
@@ -233,7 +120,7 @@ students = get_all_students()
 
 
 # ==========================================
-# DASHBOARD METRICS
+# DASHBOARD METRICS (Now fully visible)
 # ==========================================
 
 st.subheader("📊 Dashboard Overview")
@@ -273,9 +160,6 @@ if students:
     df = pd.DataFrame(students)
     left_col, right_col = st.columns(2)
 
-    # --------------------------------------
-    # DEPARTMENT DISTRIBUTION
-    # --------------------------------------
     with left_col:
         st.markdown("#### 🏫 Department-wise Students")
         department_counts = (
@@ -307,9 +191,6 @@ if students:
             use_container_width=True
         )
 
-    # --------------------------------------
-    # YEAR-WISE DISTRIBUTION
-    # --------------------------------------
     with right_col:
         st.markdown("#### 📚 Year-wise Students")
         year_counts = (
@@ -349,7 +230,6 @@ else:
         "Open Student Management from the sidebar to register your first student."
     )
 
-
 st.divider()
 
 
@@ -379,9 +259,6 @@ with get_connection() as conn:
 if not marks_df.empty:
     col1, col2 = st.columns(2)
 
-    # --------------------------------------
-    # AVERAGE MARKS BY DEPARTMENT
-    # --------------------------------------
     with col1:
         department_performance = (
             marks_df.groupby("department")["marks"]
@@ -411,9 +288,6 @@ if not marks_df.empty:
             use_container_width=True
         )
 
-    # --------------------------------------
-    # MARKS DISTRIBUTION
-    # --------------------------------------
     with col2:
         marks_chart = px.histogram(
             marks_df,
@@ -441,7 +315,6 @@ else:
     st.info(
         "Academic charts will appear after you enter marks in the Marks Management page."
     )
-
 
 st.divider()
 
@@ -482,7 +355,6 @@ if students:
 
 else:
     st.write("Student registrations will appear here once you add students.")
-
 
 st.divider()
 
