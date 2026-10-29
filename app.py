@@ -7,14 +7,11 @@ from database import (
     get_dashboard_stats,
     get_connection
 )
-
 from auth import require_login, logout_button
-
 
 # ==========================================
 # PAGE CONFIGURATION
 # ==========================================
-
 st.set_page_config(
     page_title="StudentHub Pro",
     page_icon="🎓",
@@ -22,21 +19,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-
 # ==========================================
 # AUTHENTICATION
 # ==========================================
-
 require_login()
 
-
 # ==========================================
-# CUSTOM CSS (Fix Invisible Metric Text & Cards)
+# CUSTOM CSS (High Contrast Dashboard Cards)
 # ==========================================
-
 st.markdown("""
 <style>
-    /* Metric container styling */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
         border: 1px solid #334155 !important;
@@ -44,372 +36,172 @@ st.markdown("""
         border-radius: 10px !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
     }
-    
-    /* Metric labels (Titles) */
     div[data-testid="stMetricLabel"] p {
         color: #94a3b8 !important;
         font-size: 14px !important;
         font-weight: 600 !important;
     }
-    
-    /* Metric values (Numbers/Stats) */
     div[data-testid="stMetricValue"] div {
-        color: #ffffff !important;
+        color: #f8fafc !important;
         font-size: 28px !important;
         font-weight: 700 !important;
     }
-
-    .dashboard-subtitle {
-        color: #94a3b8;
-        font-size: 16px;
-        margin-top: -10px;
-        margin-bottom: 20px;
-    }
-
-    .dashboard-footer {
-        text-align: center;
-        color: #64748b;
-        font-size: 13px;
-        margin-top: 50px;
-        padding-top: 20px;
-        border-top: 1px solid #334155;
+    .stButton>button {
+        width: 100%;
+        text-align: left;
+        border-radius: 8px;
+        padding: 10px 15px;
+        margin-bottom: 5px;
     }
 </style>
 """, unsafe_allow_html=True)
 
+# Initialize Active Page state
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "Dashboard Overview"
 
 # ==========================================
-# SIDEBAR
+# SIDEBAR NAVIGATION (Real, Working Buttons)
 # ==========================================
-
 logout_button()
-
+st.sidebar.title("🎓 StudentHub Pro")
 st.sidebar.divider()
 st.sidebar.success("Administrator authenticated")
+st.sidebar.markdown("### 📌 Navigation")
+
+if st.sidebar.button("📊 Dashboard Overview", use_container_width=True):
+    st.session_state.current_page = "Dashboard Overview"
+    st.rerun()
+
+if st.sidebar.button("👨‍🎓 Student Management", use_container_width=True):
+    st.session_state.current_page = "Student Management"
+    st.rerun()
+
+if st.sidebar.button("📚 Course Management", use_container_width=True):
+    st.session_state.current_page = "Course Management"
+    st.rerun()
+
+if st.sidebar.button("📝 Marks Management", use_container_width=True):
+    st.session_state.current_page = "Marks Management"
+    st.rerun()
+
 st.sidebar.divider()
-
-st.sidebar.info(
-    "Manage student records and monitor academic performance from one dashboard."
-)
-
+st.sidebar.info("Manage student records and monitor academic performance from one dashboard.")
 
 # ==========================================
-# DASHBOARD HEADER
+# PAGE ROUTING LOGIC
 # ==========================================
 
-st.title("🎓 StudentHub Pro")
+# 1. DASHBOARD OVERVIEW PAGE
+if st.session_state.current_page == "Dashboard Overview":
+    st.title("🎓 StudentHub Pro")
+    st.markdown("<p style='color: #94a3b8;'>Smart Student Management & Academic Analytics</p>", unsafe_allow_html=True)
+    st.divider()
 
-st.markdown(
-    """
-    <p class="dashboard-subtitle">
-        Smart Student Management & Academic Analytics
-    </p>
-    """,
-    unsafe_allow_html=True
-)
+    stats = get_dashboard_stats()
+    students = get_all_students()
 
-st.divider()
+    st.subheader("📊 Dashboard Overview")
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("👨‍🎓 Total Students", stats["total_students"])
+    col2.metric("🏫 Departments", stats["total_departments"])
+    col3.metric("📈 Average Marks", f"{stats['average_marks']:.2f}%")
+    col4.metric("✅ Subject Pass Rate", f"{stats['pass_percentage']:.1f}%")
 
+    st.divider()
 
-# ==========================================
-# LOAD DATABASE STATISTICS
-# ==========================================
+    st.subheader("📈 Student Analytics")
+    if students:
+        df = pd.DataFrame(students)
+        left_col, right_col = st.columns(2)
+        with left_col:
+            st.markdown("#### 🏫 Department-wise Students")
+            dep_counts = df.groupby("department").size().reset_index(name="Students")
+            dep_chart = px.bar(dep_counts, x="department", y="Students", color="department")
+            dep_chart.update_layout(showlegend=False)
+            st.plotly_chart(dep_chart, use_container_width=True)
 
-stats = get_dashboard_stats()
-students = get_all_students()
+        with right_col:
+            st.markdown("#### 📚 Year-wise Students")
+            yr_counts = df.groupby("year").size().reset_index(name="Students")
+            yr_chart = px.bar(yr_counts, x="year", y="Students")
+            st.plotly_chart(yr_chart, use_container_width=True)
+    else:
+        st.info("No student records are available yet.")
 
+    st.divider()
 
-# ==========================================
-# DASHBOARD METRICS (Now fully visible)
-# ==========================================
-
-st.subheader("📊 Dashboard Overview")
-
-col1, col2, col3, col4 = st.columns(4)
-
-col1.metric(
-    label="👨‍🎓 Total Students",
-    value=stats["total_students"]
-)
-
-col2.metric(
-    label="🏫 Departments",
-    value=stats["total_departments"]
-)
-
-col3.metric(
-    label="📈 Average Marks",
-    value=f"{stats['average_marks']:.2f}%"
-)
-
-col4.metric(
-    label="✅ Subject Pass Rate",
-    value=f"{stats['pass_percentage']:.1f}%"
-)
-
-st.divider()
-
-
-# ==========================================
-# STUDENT DISTRIBUTION CHARTS
-# ==========================================
-
-st.subheader("📈 Student Analytics")
-
-if students:
-    df = pd.DataFrame(students)
-    left_col, right_col = st.columns(2)
-
-    with left_col:
-        st.markdown("#### 🏫 Department-wise Students")
-        department_counts = (
-            df.groupby("department")
-            .size()
-            .reset_index(name="Students")
+    st.subheader("📝 Academic Performance")
+    with get_connection() as conn:
+        marks_df = pd.read_sql_query(
+            """
+            SELECT s.roll_number, s.name, s.department, m.subject, m.marks
+            FROM marks m
+            INNER JOIN students s ON s.id = m.student_id
+            ORDER BY s.name
+            """,
+            conn
         )
 
-        department_chart = px.bar(
-            department_counts,
-            x="department",
-            y="Students",
-            color="department",
-            title="Student Distribution by Department",
-            labels={
-                "department": "Department",
-                "Students": "Number of Students"
-            }
-        )
+    if not marks_df.empty:
+        c1, c2 = st.columns(2)
+        with c1:
+            dep_perf = marks_df.groupby("department")["marks"].mean().reset_index()
+            perf_chart = px.bar(dep_perf, x="department", y="marks", color="department")
+            perf_chart.update_layout(showlegend=False, yaxis_range=[0, 100])
+            st.plotly_chart(perf_chart, use_container_width=True)
 
-        department_chart.update_layout(
-            showlegend=False,
-            xaxis_title="Department",
-            yaxis_title="Number of Students"
-        )
+        with c2:
+            marks_chart = px.histogram(marks_df, x="marks", nbins=10)
+            marks_chart.update_layout(xaxis_range=[0, 100])
+            st.plotly_chart(marks_chart, use_container_width=True)
+    else:
+        st.info("Academic charts will appear after you enter marks.")
 
-        st.plotly_chart(
-            department_chart,
-            use_container_width=True
-        )
+    st.divider()
 
-    with right_col:
-        st.markdown("#### 📚 Year-wise Students")
-        year_counts = (
-            df.groupby("year")
-            .size()
-            .reset_index(name="Students")
-        )
+    st.subheader("👨‍🎓 Recent Student Registrations")
+    if students:
+        recent = pd.DataFrame(students)[["roll_number", "name", "email", "department", "year"]].head(10)
+        recent.columns = ["Roll Number", "Student Name", "Email", "Department", "Year"]
+        st.dataframe(recent, use_container_width=True, hide_index=True)
 
-        year_chart = px.bar(
-            year_counts,
-            x="year",
-            y="Students",
-            title="Student Distribution by Academic Year",
-            labels={
-                "year": "Year of Study",
-                "Students": "Number of Students"
-            }
-        )
+# 2. STUDENT MANAGEMENT PAGE
+elif st.session_state.current_page == "Student Management":
+    try:
+        from pages.Student_Management import *
+    except ModuleNotFoundError:
+        import importlib.util
+        import os
+        page_path = os.path.join(os.path.dirname(__file__), "pages", "Student_Management.py")
+        if os.path.exists(page_path):
+            with open(page_path, encoding="utf-8") as f:
+                exec(f.read())
+        else:
+            st.error("Could not locate Student_Management.py in the pages directory.")
 
-        year_chart.update_layout(
-            xaxis_title="Year of Study",
-            yaxis_title="Number of Students",
-            xaxis=dict(
-                tickmode="linear",
-                dtick=1
-            )
-        )
+# 3. COURSE MANAGEMENT PAGE
+elif st.session_state.current_page == "Course Management":
+    try:
+        from pages.Course_Management import *
+    except ModuleNotFoundError:
+        import os
+        page_path = os.path.join(os.path.dirname(__file__), "pages", "Course_Management.py")
+        if os.path.exists(page_path):
+            with open(page_path, encoding="utf-8") as f:
+                exec(f.read())
+        else:
+            st.error("Could not locate Course_Management.py in the pages directory.")
 
-        st.plotly_chart(
-            year_chart,
-            use_container_width=True
-        )
-
-else:
-    st.info(
-        "No student records are available yet. "
-        "Open Student Management from the sidebar to register your first student."
-    )
-
-st.divider()
-
-
-# ==========================================
-# ACADEMIC PERFORMANCE
-# ==========================================
-
-st.subheader("📝 Academic Performance")
-
-with get_connection() as conn:
-    marks_df = pd.read_sql_query(
-        """
-        SELECT
-            s.roll_number,
-            s.name,
-            s.department,
-            m.subject,
-            m.marks
-        FROM marks m
-        INNER JOIN students s
-            ON s.id = m.student_id
-        ORDER BY s.name
-        """,
-        conn
-    )
-
-if not marks_df.empty:
-    col1, col2 = st.columns(2)
-
-    with col1:
-        department_performance = (
-            marks_df.groupby("department")["marks"]
-            .mean()
-            .reset_index()
-        )
-
-        department_chart = px.bar(
-            department_performance,
-            x="department",
-            y="marks",
-            color="department",
-            title="Average Marks by Department",
-            labels={
-                "department": "Department",
-                "marks": "Average Marks"
-            }
-        )
-
-        department_chart.update_layout(
-            showlegend=False,
-            yaxis_range=[0, 100]
-        )
-
-        st.plotly_chart(
-            department_chart,
-            use_container_width=True
-        )
-
-    with col2:
-        marks_chart = px.histogram(
-            marks_df,
-            x="marks",
-            nbins=10,
-            title="Distribution of Subject Marks",
-            labels={
-                "marks": "Marks",
-                "count": "Number of Records"
-            }
-        )
-
-        marks_chart.update_layout(
-            xaxis_range=[0, 100],
-            xaxis_title="Marks",
-            yaxis_title="Number of Records"
-        )
-
-        st.plotly_chart(
-            marks_chart,
-            use_container_width=True
-        )
-
-else:
-    st.info(
-        "Academic charts will appear after you enter marks in the Marks Management page."
-    )
-
-st.divider()
-
-
-# ==========================================
-# RECENT STUDENT REGISTRATIONS
-# ==========================================
-
-st.subheader("👨‍🎓 Recent Student Registrations")
-
-if students:
-    recent_students = pd.DataFrame(students)
-    recent_students = recent_students[
-        [
-            "roll_number",
-            "name",
-            "email",
-            "department",
-            "year"
-        ]
-    ].head(10)
-
-    recent_students = recent_students.rename(
-        columns={
-            "roll_number": "Roll Number",
-            "name": "Student Name",
-            "email": "Email",
-            "department": "Department",
-            "year": "Year"
-        }
-    )
-
-    st.dataframe(
-        recent_students,
-        use_container_width=True,
-        hide_index=True
-    )
-
-else:
-    st.write("Student registrations will appear here once you add students.")
-
-st.divider()
-
-
-# ==========================================
-# TOP PERFORMERS
-# ==========================================
-
-st.subheader("🏆 Top Student Performers")
-
-if not marks_df.empty:
-    student_averages = (
-        marks_df.groupby(
-            ["roll_number", "name", "department"]
-        )["marks"]
-        .mean()
-        .reset_index()
-        .rename(
-            columns={"marks": "Average Marks"}
-        )
-        .sort_values(
-            "Average Marks",
-            ascending=False
-        )
-        .head(5)
-    )
-
-    student_averages.insert(
-        0,
-        "Rank",
-        range(1, len(student_averages) + 1)
-    )
-
-    st.dataframe(
-        student_averages.round(
-            {"Average Marks": 2}
-        ),
-        use_container_width=True,
-        hide_index=True
-    )
-
-else:
-    st.info("Top performers will appear when student marks are available.")
-
-
-# ==========================================
-# FOOTER
-# ==========================================
-
-st.markdown(
-    """
-    <div class="dashboard-footer">
-        StudentHub Pro | Smart Student Management System<br>
-        Academic Records • Course Management • Performance Tracking
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+# 4. MARKS MANAGEMENT PAGE
+elif st.session_state.current_page == "Marks Management":
+    try:
+        from pages.Marks_Management import *
+    except ModuleNotFoundError:
+        import os
+        page_path = os.path.join(os.path.dirname(__file__), "pages", "Marks_Management.py")
+        if os.path.exists(page_path):
+            with open(page_path, encoding="utf-8") as f:
+                exec(f.read())
+        else:
+            st.error("Could not locate Marks_Management.py in the pages directory.")
