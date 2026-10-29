@@ -92,8 +92,7 @@ st.sidebar.success(
     "Administrator authenticated"
 )
 
-st.s
-idebar.markdown(
+st.sidebar.markdown(
     """
     ### 📌 Navigation
 
