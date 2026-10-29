@@ -64,7 +64,16 @@ st.markdown("""
 # ==========================================
 # SIDEBAR
 # ==========================================
-
+st.sidebar.title("🎓 StudentHub Pro")
+st.sidebar.title("🎓 StudentHub Pro")
+st.sidebar.divider()
+st.sidebar.success( "Administrator authenticated" )
+st.sidebar.markdown("### 📌 Navigation")
+st.sidebar.page_link("app.py", label="Dashboard Overview", icon="📊")
+st.sidebar.page_link("pages/Student_Management.py", label="Student Management", icon="👨‍🎓")
+st.sidebar.page_link("pages/Course_Management.py", label="Course Management", icon="📚")
+st.sidebar.page_link("pages/Marks_Management.py", label="Marks Management", icon="📝")
+st.sidebar.divider() st.sidebar.info( "Manage student records and monitor academic performance " "from one dashboard." )
 
 # ==========================================
 # DASHBOARD HEADER
