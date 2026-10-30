@@ -33,3 +33,20 @@ def ensure_extended_schema():
 
 # 3. Call the schema update AFTER both functions are defined
 ensure_extended_schema()
+def update_student_password(student_id, new_password):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE students SET password = ? WHERE id = ?", (new_password, student_id))
+        conn.commit()
+
+def add_announcement(title, message):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO announcements (title, message) VALUES (?, ?)", (title, message))
+        conn.commit()
+
+def get_announcements():
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT title, message, date_posted FROM announcements ORDER BY id DESC LIMIT 5")
+        return cursor.fetchall()
