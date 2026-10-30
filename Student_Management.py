@@ -2,7 +2,7 @@ import re
 
 import pandas as pd
 import streamlit as st
-
+https://github.com/manoharpaka472-del/student_hubpro/blob/main/Student_Management.py
 from database import (
     add_student,
     delete_student,
@@ -102,13 +102,15 @@ with st.form("add_student_form", clear_on_submit=True):
 
         else:
             try:
-                add_student(
-                    roll_number,
-                    name,
-                    email,
-                    department,
-                    year
-                )
+                # In Student_Management.py:
+add_student(
+    name=name,
+    roll_number=roll_number.strip().upper(),
+    email=email,
+    department=department,
+    year=year,
+    password="student123"
+)
 
                 st.success(
                     f"Student {name.strip()} registered successfully!"
