@@ -13,15 +13,24 @@ def check_admin_credentials(username, password):
         return False
 
 def verify_student_credentials(roll_number, password):
-    """Verify student credentials from database (Default password: student123)."""
+    """Verify student credentials strictly against database."""
+    cleaned_roll = str(roll_number).strip().upper()
+    cleaned_pwd = str(password).strip()
+
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM students WHERE UPPER(TRIM(roll_number)) = UPPER(TRIM(?))", (roll_number,))
+        cursor.execute("SELECT * FROM students WHERE UPPER(TRIM(roll_number)) = ?", (cleaned_roll,))
         row = cursor.fetchone()
+        
         if row:
             student = dict(row)
-            stored_pwd = student.get("password") or "student123"
-            if hmac.compare_digest(password, stored_pwd):
+            # Fetch strictly from DB; only default if column was truly NULL/empty
+            db_pwd = str(student.get("password") or "").strip()
+            if not db_pwd:
+                db_pwd = "student123"
+            
+            # Strict single-match comparison
+            if hmac.compare_digest(cleaned_pwd, db_pwd):
                 return student
     return None
 
