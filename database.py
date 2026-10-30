@@ -20,6 +20,28 @@ def ensure_extended_schema():
     with get_connection() as conn:
         cursor = conn.cursor()
 
+        # Check existing columns in the students table
+        cursor.execute("PRAGMA table_info(students)")
+        columns = [row[1] for row in cursor.fetchall()]
+
+        # Force add 'password' column if it does not exist
+        if "password" not in columns:
+            cursor.execute("ALTER TABLE students ADD COLUMN password TEXT DEFAULT 'student123'")
+            conn.commit()
+
+        # Create announcements table if it doesn't exist
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS announcements (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                message TEXT NOT NULL,
+                date_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+
+ensure_extended_schema()
+
         # Students Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS students (
