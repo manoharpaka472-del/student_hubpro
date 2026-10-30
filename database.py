@@ -82,6 +82,7 @@ ensure_extended_schema()
 # ==========================================
 
 def add_student(name, roll_number, email, department, year, password="student123"):
+    cleaned_roll = str(roll_number).strip().upper()
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute(
@@ -89,50 +90,8 @@ def add_student(name, roll_number, email, department, year, password="student123
             INSERT INTO students (name, roll_number, email, department, year, password)
             VALUES (?, ?, ?, ?, ?, ?)
             """,
-            (name, roll_number, email, department, year, password)
+            (name.strip(), cleaned_roll, email.strip(), department.strip(), int(year), password.strip())
         )
-        conn.commit()
-
-def get_all_students():
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM students ORDER BY name")
-        rows = cursor.fetchall()
-        return [dict(row) for row in rows]
-
-def search_students(query):
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        q = f"%{query}%"
-        cursor.execute(
-            """
-            SELECT * FROM students
-            WHERE name LIKE ? OR roll_number LIKE ? OR department LIKE ?
-            ORDER BY name
-            """,
-            (q, q, q)
-        )
-        rows = cursor.fetchall()
-        return [dict(row) for row in rows]
-
-def update_student(student_id, name, email, department, year):
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            UPDATE students
-            SET name = ?, email = ?, department = ?, year = ?
-            WHERE id = ?
-            """,
-            (name, email, department, year, student_id)
-        )
-        conn.commit()
-
-def delete_student(student_id):
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM marks WHERE student_id = ?", (student_id,))
-        cursor.execute("DELETE FROM students WHERE id = ?", (student_id,))
         conn.commit()
 
 def update_student_password(student_id, new_password):
@@ -140,7 +99,7 @@ def update_student_password(student_id, new_password):
         cursor = conn.cursor()
         cursor.execute(
             "UPDATE students SET password = ? WHERE id = ?",
-            (new_password, student_id)
+            (str(new_password).strip(), student_id)
         )
         conn.commit()
 
