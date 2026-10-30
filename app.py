@@ -565,15 +565,15 @@ Subject                      Marks    Grade
             sub_pwd = st.form_submit_button("Update Password", use_container_width=True)
 
             if sub_pwd:
-                current_stored = student.get("password") or "student123"
-                if old_p != current_stored:
+                current_stored = (student.get("password") or "student123").strip()
+                if old_p.strip() != current_stored:
                     st.error("Current password does not match.")
-                elif new_p != confirm_p:
+                elif new_p.strip() != confirm_p.strip():
                     st.error("New passwords do not match.")
-                elif len(new_p) < 4:
+                elif len(new_p.strip()) < 4:
                     st.warning("Password must be at least 4 characters long.")
                 else:
-                    update_student_password(student["id"], new_p)
-                    student["password"] = new_p
-                    st.session_state["student_info"] = student
-                    st.success("Password updated successfully!")
+                    update_student_password(student["id"], new_p.strip())
+                    # Update local session data so next checks use new password
+                    st.session_state["student_info"]["password"] = new_p.strip()
+                    st.success("Password updated successfully! Next time log in with your new password.")
