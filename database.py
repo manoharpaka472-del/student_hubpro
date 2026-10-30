@@ -20,7 +20,7 @@ def ensure_extended_schema():
     with get_connection() as conn:
         cursor = conn.cursor()
 
-        # Create students table if it doesn't exist
+        # Create students table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS students (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,14 +33,14 @@ def ensure_extended_schema():
             )
         """)
 
-        # Inspect existing columns and force add 'password' if missing
+        # Check existing columns and safely add password column if missing
         cursor.execute("PRAGMA table_info(students)")
         existing_cols = [row[1] for row in cursor.fetchall()]
         if "password" not in existing_cols:
             cursor.execute("ALTER TABLE students ADD COLUMN password TEXT DEFAULT 'student123'")
             conn.commit()
 
-        # Create courses table if it doesn't exist
+        # Create courses table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS courses (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,7 +51,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Create marks table if it doesn't exist
+        # Create marks table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS marks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,7 +62,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Create announcements table if it doesn't exist
+        # Create announcements table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS announcements (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,7 +73,7 @@ def ensure_extended_schema():
         """)
         conn.commit()
 
-# Execute schema setup and auto-migration
+# Run initialization
 ensure_extended_schema()
 
 
@@ -157,4 +157,51 @@ def update_student_password(student_id, new_password):
 # ==========================================
 
 def get_dashboard_stats():
-    with get
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT COUNT(*) FROM students")
+        total_students = cursor.fetchone()[0] or 0
+        
+        cursor.execute("SELECT COUNT(DISTINCT department) FROM students")
+        total_departments = cursor.fetchone()[0] or 0
+        
+        cursor.execute("SELECT AVG(marks) FROM marks")
+        avg_row = cursor.fetchone()[0]
+        average_marks = round(avg_row, 2) if avg_row else 0.0
+        
+        cursor.execute("SELECT COUNT(*) FROM marks")
+        total_marks = cursor.fetchone()[0] or 0
+        
+        cursor.execute("SELECT COUNT(*) FROM marks WHERE marks >= 40")
+        passed_marks = cursor.fetchone()[0] or 0
+        pass_percentage = round((passed_marks / total_marks * 100), 1) if total_marks > 0 else 0.0
+
+        return {
+            "total_students": total_students,
+            "total_departments": total_departments,
+            "average_marks": average_marks,
+            "pass_percentage": pass_percentage
+        }
+
+
+# ==========================================
+# 5. CAMPUS ANNOUNCEMENTS
+# ==========================================
+
+def add_announcement(title, message):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO announcements (title, message) VALUES (?, ?)",
+            (title.strip(), message.strip())
+        )
+        conn.commit()
+
+def get_announcements():
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT title, message, date_posted FROM announcements ORDER BY id DESC LIMIT 5"
+        )
+        return cursor.fetchall()
