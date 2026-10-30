@@ -73,11 +73,9 @@ def require_login():
                 )
 
     st.stop()
-
-
-def logout_button():
-
-    if st.sidebar.button("🚪 Logout"):
-
+def logout_button(key=None):
+    btn_key = key if key else f"logout_btn_{st.session_state.get('current_page', 'default')}"
+    if st.sidebar.button("🚪 Logout", key=btn_key):
         st.session_state["authenticated"] = False
         st.rerun()
+
