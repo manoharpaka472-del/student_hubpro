@@ -13,36 +13,14 @@ def get_connection():
 
 
 # ==========================================
-# 2. SCHEMA INITIALIZATION
+# 2. SCHEMA INITIALIZATION & AUTO-MIGRATIONS
 # ==========================================
 
 def ensure_extended_schema():
     with get_connection() as conn:
         cursor = conn.cursor()
 
-        # Check existing columns in the students table
-        cursor.execute("PRAGMA table_info(students)")
-        columns = [row[1] for row in cursor.fetchall()]
-
-        # Force add 'password' column if it does not exist
-        if "password" not in columns:
-            cursor.execute("ALTER TABLE students ADD COLUMN password TEXT DEFAULT 'student123'")
-            conn.commit()
-
-        # Create announcements table if it doesn't exist
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS announcements (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                message TEXT NOT NULL,
-                date_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        conn.commit()
-
-ensure_extended_schema()
-
-        # Students Table
+        # Create students table if it doesn't exist
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS students (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,14 +33,25 @@ ensure_extended_schema()
             )
         """)
 
-        # Migration: ensure password column exists
-        try:
+        # Inspect existing columns and force add 'password' if missing
+        cursor.execute("PRAGMA table_info(students)")
+        existing_cols = [row[1] for row in cursor.fetchall()]
+        if "password" not in existing_cols:
             cursor.execute("ALTER TABLE students ADD COLUMN password TEXT DEFAULT 'student123'")
             conn.commit()
-        except sqlite3.OperationalError:
-            pass
 
-        # Marks Table
+        # Create courses table if it doesn't exist
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS courses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                course_code TEXT UNIQUE NOT NULL,
+                course_name TEXT NOT NULL,
+                department TEXT NOT NULL,
+                credits INTEGER NOT NULL
+            )
+        """)
+
+        # Create marks table if it doesn't exist
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS marks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,7 +62,7 @@ ensure_extended_schema()
             )
         """)
 
-        # Announcements Table
+        # Create announcements table if it doesn't exist
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS announcements (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -84,19 +73,13 @@ ensure_extended_schema()
         """)
         conn.commit()
 
+# Execute schema setup and auto-migration
 ensure_extended_schema()
 
 
 # ==========================================
 # 3. STUDENT CRUD OPERATIONS
 # ==========================================
-
-def get_all_students():
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM students ORDER BY name")
-        rows = cursor.fetchall()
-        return [dict(row) for row in rows]
 
 def add_student(name, roll_number, email, department, year, password="student123"):
     with get_connection() as conn:
@@ -106,9 +89,23 @@ def add_student(name, roll_number, email, department, year, password="student123
             INSERT INTO students (name, roll_number, email, department, year, password)
             VALUES (?, ?, ?, ?, ?, ?)
             """,
-            (name.strip(), str(roll_number).strip().upper(), email.strip(), department.strip(), int(year), password.strip())
+            (
+                name.strip(),
+                str(roll_number).strip().upper(),
+                email.strip(),
+                department.strip(),
+                int(year),
+                password.strip() if password else "student123"
+            )
         )
         conn.commit()
+
+def get_all_students():
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM students ORDER BY name")
+        rows = cursor.fetchall()
+        return [dict(row) for row in rows]
 
 def search_students(query):
     with get_connection() as conn:
@@ -160,51 +157,4 @@ def update_student_password(student_id, new_password):
 # ==========================================
 
 def get_dashboard_stats():
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        
-        cursor.execute("SELECT COUNT(*) FROM students")
-        total_students = cursor.fetchone()[0] or 0
-        
-        cursor.execute("SELECT COUNT(DISTINCT department) FROM students")
-        total_departments = cursor.fetchone()[0] or 0
-        
-        cursor.execute("SELECT AVG(marks) FROM marks")
-        avg_row = cursor.fetchone()[0]
-        average_marks = round(avg_row, 2) if avg_row else 0.0
-        
-        cursor.execute("SELECT COUNT(*) FROM marks")
-        total_marks = cursor.fetchone()[0] or 0
-        
-        cursor.execute("SELECT COUNT(*) FROM marks WHERE marks >= 40")
-        passed_marks = cursor.fetchone()[0] or 0
-        pass_percentage = round((passed_marks / total_marks * 100), 1) if total_marks > 0 else 0.0
-
-        return {
-            "total_students": total_students,
-            "total_departments": total_departments,
-            "average_marks": average_marks,
-            "pass_percentage": pass_percentage
-        }
-
-
-# ==========================================
-# 5. CAMPUS ANNOUNCEMENTS
-# ==========================================
-
-def add_announcement(title, message):
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO announcements (title, message) VALUES (?, ?)",
-            (title.strip(), message.strip())
-        )
-        conn.commit()
-
-def get_announcements():
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT title, message, date_posted FROM announcements ORDER BY id DESC LIMIT 5"
-        )
-        return cursor.fetchall()
+    with get
