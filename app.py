@@ -22,7 +22,7 @@ st.set_page_config(
 # ==========================================
 # AUTHENTICATION
 # ==========================================
-require_login()
+require_login()st.session_state["_logout_rendered"] = False
 
 # ==========================================
 # CUSTOM CSS (High Contrast Dashboard Cards)
