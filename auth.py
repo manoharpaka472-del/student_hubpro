@@ -1,6 +1,6 @@
 import streamlit as st
 import hmac
-from database import get_all_students, get_connection
+from database import get_connection
 
 def check_admin_credentials(username, password):
     """Verify administrator credentials against Streamlit secrets."""
@@ -9,23 +9,30 @@ def check_admin_credentials(username, password):
         correct_pass = st.secrets["admin_password"]
         return hmac.compare_digest(username, correct_user) and hmac.compare_digest(password, correct_pass)
     except Exception:
-        st.error("Login configuration is missing. Please configure application secrets in Streamlit Cloud.")
+        st.error("Login configuration missing. Please configure secrets in Streamlit Cloud Dashboard.")
         return False
 
-def verify_student(roll_number):
-    """Verify student existence in the database by roll number."""
-    students = get_all_students()
-    for student in students:
-        if str(student["roll_number"]).strip().upper() == str(roll_number).strip().upper():
-            return student
+def verify_student_credentials(roll_number, password):
+    """Verify student credentials from database (Default password: student123)."""
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM students WHERE UPPER(TRIM(roll_number)) = UPPER(TRIM(?))", (roll_number,))
+        row = cursor.fetchone()
+        if row:
+            student = dict(row)
+            stored_pwd = student.get("password") or "student123"
+            if hmac.compare_digest(password, stored_pwd):
+                return student
     return None
 
 def login_form():
-    """Renders a modern dual-role login interface."""
+    """Renders dual-role login interface."""
     st.markdown("""
     <div style="text-align: center; margin-bottom: 25px;">
-        <h1 style="color: #f8fafc; font-weight: 800; margin: 0;">StudentHub<span style="color: #38bdf8;">.Pro</span></h1>
-        <p style="color: #94a3b8; font-size: 14px;">Smart Student Management & Academic Portal</p>
+        <h1 style="color: #f8fafc; font-weight: 800; margin: 0; font-size: 38px;">
+            StudentHub<span style="color: #38bdf8;">.Pro</span>
+        </h1>
+        <p style="color: #94a3b8; font-size: 15px;">Secure Academic Portal & Institutional Management</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -36,10 +43,10 @@ def login_form():
         # ----------------- ADMIN LOGIN -----------------
         with tab_admin:
             with st.form("admin_login_form"):
-                st.markdown("#### Admin Authentication")
+                st.markdown("##### Administrative Credentials")
                 user = st.text_input("Username", placeholder="e.g. admin")
                 pwd = st.text_input("Password", type="password", placeholder="••••••••")
-                submit_admin = st.form_submit_button("Log In as Admin", use_container_width=True)
+                submit_admin = st.form_submit_button("Log In as Administrator", use_container_width=True)
 
                 if submit_admin:
                     if check_admin_credentials(user, pwd):
@@ -53,15 +60,16 @@ def login_form():
         # ----------------- STUDENT LOGIN -----------------
         with tab_student:
             with st.form("student_login_form"):
-                st.markdown("#### Student Authentication")
-                roll_no = st.text_input("Enter Registered Roll Number", placeholder="e.g. 2505A31016")
+                st.markdown("##### Student Credentials")
+                roll_no = st.text_input("Roll Number", placeholder="e.g. 2505A31016")
+                student_pwd = st.text_input("Password", type="password", placeholder="Default: student123")
                 submit_student = st.form_submit_button("Log In to Student Portal", use_container_width=True)
 
                 if submit_student:
-                    if not roll_no.strip():
-                        st.warning("Please enter your roll number.")
+                    if not roll_no.strip() or not student_pwd.strip():
+                        st.warning("Please provide both Roll Number and Password.")
                     else:
-                        student_rec = verify_student(roll_no)
+                        student_rec = verify_student_credentials(roll_no, student_pwd)
                         if student_rec:
                             st.session_state["authenticated"] = True
                             st.session_state["role"] = "student"
@@ -69,16 +77,14 @@ def login_form():
                             st.session_state["user_display"] = student_rec["name"]
                             st.rerun()
                         else:
-                            st.error("Roll number not found. Please contact the administrator.")
+                            st.error("Invalid Roll Number or Password. (Default is student123)")
 
 def require_login():
-    """Halts execution if the user is not authenticated."""
     if not st.session_state.get("authenticated", False):
         login_form()
         st.stop()
 
 def logout_button():
-    """Renders a single safe logout button in the sidebar."""
     if not st.session_state.get("authenticated", False):
         return
 
