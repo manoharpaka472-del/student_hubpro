@@ -73,9 +73,20 @@ def require_login():
                 )
 
     st.stop()
-def logout_button(key=None):
-    btn_key = key if key else f"logout_btn_{st.session_state.get('current_page', 'default')}"
-    if st.sidebar.button("🚪 Logout", key=btn_key):
+
+
+def logout_button():
+    # Only render the logout button if user is authenticated and it hasn't rendered yet
+    if not st.session_state.get("authenticated", False):
+        return
+
+    # Check flag to ensure button only renders once per run
+    if st.session_state.get("_logout_rendered", False):
+        return
+
+    if st.sidebar.button("🚪 Logout", key="global_logout_btn"):
         st.session_state["authenticated"] = False
+        st.session_state["_logout_rendered"] = False
         st.rerun()
 
+    st.session_state["_logout_rendered"] = True
