@@ -40,136 +40,161 @@ st.set_page_config(
 st.session_state["_logout_rendered"] = False
 
 # ==========================================
-# FIGMA-INSPIRED CLEAN SAAS LIGHT THEME CSS
+# MODERN CAMPUS BACKGROUND & VIBRANT 3D BUTTONS
 # ==========================================
 st.markdown("""
 <style>
-    /* Clean SaaS Light Canvas */
+    /* Architectural Campus Photo Background with Gradient Blend */
     .stApp {
-        background-color: #f8fafc !important;
-        color: #0f172a !important;
+        background: linear-gradient(rgba(10, 15, 30, 0.86), rgba(15, 23, 42, 0.94)),
+                    url("https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070&auto=format&fit=crop") no-repeat center center fixed !important;
+        background-size: cover !important;
+        color: #f8fafc !important;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
     }
 
-    /* Clean White Sidebar */
+    /* Headings and Typography Highlights */
+    h1, h2, h3, h4 {
+        color: #ffffff !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    p, span, label, .stMarkdown {
+        color: #e2e8f0 !important;
+    }
+
+    /* Translucent Glassmorphism Sidebar */
     [data-testid="stSidebar"] {
-        background-color: #ffffff !important;
-        border-right: 1px solid #e2e8f0 !important;
+        background: rgba(11, 19, 43, 0.92) !important;
+        backdrop-filter: blur(16px) !important;
+        border-right: 1px solid rgba(56, 189, 248, 0.25) !important;
     }
     [data-testid="stSidebar"] * {
-        color: #334155 !important;
+        color: #f1f5f9 !important;
     }
 
-    /* Sidebar Active & Navigation Buttons */
+    /* Vibrant 3D Buttons with Neon Shadow */
     .stButton>button {
         width: 100%;
-        background-color: #ffffff !important;
-        color: #334155 !important;
-        font-weight: 600 !important;
+        background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0284c7 100%) !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
         font-size: 14px !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 10px !important;
-        padding: 10px 14px !important;
-        margin-bottom: 6px !important;
-        text-align: left !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
-        transition: all 0.2s ease-in-out !important;
+        border: 1px solid rgba(147, 197, 253, 0.45) !important;
+        border-radius: 12px !important;
+        padding: 12px 18px !important;
+        margin-bottom: 8px !important;
+        box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+        transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transform: perspective(600px) translateZ(0);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     }
     .stButton>button:hover {
-        background-color: #2563eb !important;
+        background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%) !important;
         color: #ffffff !important;
-        border-color: #2563eb !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
+        transform: perspective(600px) translateY(-3px) scale(1.02);
+        box-shadow: 0 12px 24px -2px rgba(6, 182, 212, 0.7), 0 0 18px rgba(56, 189, 248, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+        border-color: #ffffff !important;
     }
     .stButton>button:active {
-        transform: translateY(1px);
+        transform: perspective(600px) translateY(2px) scale(0.98);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
     }
 
-    /* Clean Figma Metric Cards */
+    /* Glass Cards */
+    .figma-card {
+        background: rgba(15, 23, 42, 0.82) !important;
+        border: 1px solid rgba(56, 189, 248, 0.2) !important;
+        border-radius: 16px !important;
+        padding: 22px !important;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+        backdrop-filter: blur(12px) !important;
+        margin-bottom: 20px;
+    }
+
+    /* Metric Cards */
     div[data-testid="stMetric"] {
-        background-color: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
-        padding: 18px 22px !important;
-        border-radius: 14px !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.03) !important;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95)) !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        padding: 20px 22px !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+        backdrop-filter: blur(10px);
     }
     div[data-testid="stMetricLabel"] p {
-        color: #64748b !important;
-        font-size: 12px !important;
+        color: #94a3b8 !important;
+        font-size: 13px !important;
         font-weight: 700 !important;
         letter-spacing: 0.5px;
         text-transform: uppercase;
     }
     div[data-testid="stMetricValue"] div {
-        color: #0f172a !important;
-        font-size: 28px !important;
+        color: #38bdf8 !important;
+        font-size: 32px !important;
         font-weight: 800 !important;
-    }
-
-    /* Custom White Containers / Panels */
-    .figma-card {
-        background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        padding: 22px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
-        margin-bottom: 20px;
+        text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
     }
 
     /* Action Required Card */
     .action-required-card {
-        background-color: #fff7ed;
-        border: 1px solid #ffedd5;
+        background: rgba(124, 45, 18, 0.4) !important;
+        border: 1px solid rgba(251, 146, 60, 0.5) !important;
         border-radius: 12px;
         padding: 16px;
         margin-top: 15px;
     }
     .action-required-title {
-        color: #c2410c;
-        font-weight: 700;
+        color: #fb923c !important;
+        font-weight: 800;
         font-size: 14px;
         margin-bottom: 6px;
     }
     .action-required-desc {
-        color: #9a3412;
+        color: #fdba74 !important;
         font-size: 13px;
         line-height: 1.4;
     }
 
-    /* Activity Item Row */
+    /* Activity Rows */
     .activity-row {
         display: flex;
         align-items: center;
         padding: 12px 0;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
     .activity-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
-        margin-right: 12px;
+        font-size: 18px;
+        margin-right: 14px;
     }
 
-    /* Big Institutional Banner */
+    /* Institutional Glowing Banner */
     .institutional-banner {
-        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
+        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0284c7 100%);
+        border: 1px solid rgba(255, 255, 255, 0.25);
         border-radius: 16px;
         padding: 32px;
         color: #ffffff;
         margin-top: 24px;
-        box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3);
+        box-shadow: 0 12px 32px rgba(37, 99, 235, 0.4);
     }
 
-    /* Dataframe Header styling */
-    [data-testid="stDataFrame"] {
-        border-radius: 12px !important;
-        border: 1px solid #e2e8f0 !important;
-        background-color: #ffffff !important;
+    /* Inputs, Selectboxes & Textareas styling */
+    .stTextInput input, .stSelectbox select, .stTextArea textarea, .stDateInput input, .stNumberInput input {
+        background-color: rgba(15, 23, 42, 0.85) !important;
+        color: #f8fafc !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        border-radius: 10px !important;
+    }
+    .stTextInput input:focus, .stSelectbox select:focus, .stTextArea textarea:focus {
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 10px rgba(56, 189, 248, 0.4) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -184,49 +209,49 @@ if "current_page" not in st.session_state:
 
 
 # ==========================================
-# SIDEBAR NAVIGATION (FIGMA STYLE)
+# SIDEBAR NAVIGATION
 # ==========================================
 logout_button()
 
 st.sidebar.markdown("""
-<div style="padding: 10px 0 15px 0; border-bottom: 1px solid #f1f5f9; margin-bottom: 15px;">
-    <h3 style="margin:0; font-size: 18px; font-weight: 800; color: #0f172a;">Academic Atelier</h3>
-    <span style="font-size: 11px; font-weight: 600; color: #64748b; letter-spacing: 0.5px;">INSTITUTIONAL PORTAL</span>
+<div style="padding: 10px 0 15px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
+    <h3 style="margin:0; font-size: 20px; font-weight: 800; color: #ffffff;">Academic Atelier</h3>
+    <span style="font-size: 11px; font-weight: 700; color: #38bdf8; letter-spacing: 0.8px;">INSTITUTIONAL PORTAL</span>
 </div>
 """, unsafe_allow_html=True)
 
 if user_role == "admin":
-    st.sidebar.caption("MAIN MENU")
+    st.sidebar.caption("MAIN CONTROLS")
 
-    if st.sidebar.button("📊  Dashboard", use_container_width=True):
+    if st.sidebar.button("📊  Executive Dashboard", use_container_width=True):
         st.session_state.current_page = "Dashboard"
         st.rerun()
 
-    if st.sidebar.button("👨‍🎓  Students", use_container_width=True):
+    if st.sidebar.button("👨‍🎓  Student Directory", use_container_width=True):
         st.session_state.current_page = "Students"
         st.rerun()
 
-    if st.sidebar.button("📅  Attendance", use_container_width=True):
+    if st.sidebar.button("📅  Attendance Registry", use_container_width=True):
         st.session_state.current_page = "Attendance"
         st.rerun()
 
-    if st.sidebar.button("📚  Courses & Marks", use_container_width=True):
+    if st.sidebar.button("📚  Course Results & Marks", use_container_width=True):
         st.session_state.current_page = "Courses & Marks"
         st.rerun()
 
-    if st.sidebar.button("📂  Assignments", use_container_width=True):
+    if st.sidebar.button("📂  Assignments Hub", use_container_width=True):
         st.session_state.current_page = "Assignments"
         st.rerun()
 
-    if st.sidebar.button("🗓️  Timetable", use_container_width=True):
+    if st.sidebar.button("🗓️  Lecture Timetable", use_container_width=True):
         st.session_state.current_page = "Timetable"
         st.rerun()
 
-    if st.sidebar.button("💳  Fees & Accounts", use_container_width=True):
+    if st.sidebar.button("💳  Fee Management", use_container_width=True):
         st.session_state.current_page = "Fees"
         st.rerun()
 
-    if st.sidebar.button("⭐  Faculty Feedback", use_container_width=True):
+    if st.sidebar.button("⭐  Course Evaluations", use_container_width=True):
         st.session_state.current_page = "Feedback"
         st.rerun()
 
@@ -257,19 +282,19 @@ else:
         st.session_state.current_page = "My Academic Profile"
         st.rerun()
 
-    if st.sidebar.button("📅  My Attendance", use_container_width=True):
+    if st.sidebar.button("📅  My Attendance Status", use_container_width=True):
         st.session_state.current_page = "My Attendance"
         st.rerun()
 
-    if st.sidebar.button("📂  Course Assignments", use_container_width=True):
+    if st.sidebar.button("📂  Coursework & Projects", use_container_width=True):
         st.session_state.current_page = "Student Assignments"
         st.rerun()
 
-    if st.sidebar.button("🗓️  Class Schedule", use_container_width=True):
+    if st.sidebar.button("🗓️  Weekly Schedule", use_container_width=True):
         st.session_state.current_page = "Student Timetable"
         st.rerun()
 
-    if st.sidebar.button("💳  Fee Invoices", use_container_width=True):
+    if st.sidebar.button("💳  Fee Clearance", use_container_width=True):
         st.session_state.current_page = "Student Fees"
         st.rerun()
 
@@ -281,11 +306,11 @@ else:
         st.session_state.current_page = "Academic Tools"
         st.rerun()
 
-    if st.sidebar.button("⭐  Course Rating", use_container_width=True):
+    if st.sidebar.button("⭐  Course Evaluation", use_container_width=True):
         st.session_state.current_page = "Student Feedback"
         st.rerun()
 
-    if st.sidebar.button("🔒  Security", use_container_width=True):
+    if st.sidebar.button("🔒  Security & Password", use_container_width=True):
         st.session_state.current_page = "Account Security"
         st.rerun()
 
@@ -313,21 +338,19 @@ def render_page(filename_variations):
 # ==========================================
 if user_role == "admin":
     if st.session_state.current_page == "Dashboard":
-        # Header from Figma Reference
         st.markdown("""
         <div style="margin-bottom: 24px;">
-            <h1 style="font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">Welcome back, Admin</h1>
-            <p style="color: #64748b; font-size: 14px; margin: 0;">Here is a snapshot of the Academic Atelier performance today.</p>
+            <h1 style="font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 4px;">Welcome back, Admin</h1>
+            <p style="color: #94a3b8; font-size: 15px; margin: 0;">Campus performance summary and real-time operations.</p>
         </div>
         """, unsafe_allow_html=True)
 
         stats = get_dashboard_stats()
         students = get_all_students()
 
-        # Figma 3-Card Stat Metrics Row
         c1, c2, c3 = st.columns(3)
         with c1:
-            st.metric(label="TOTAL STUDENTS", value=f"{stats['total_students']:,}", delta="+4% this term")
+            st.metric(label="TOTAL ENROLLED STUDENTS", value=f"{stats['total_students']:,}", delta="+4% this term")
         with c2:
             st.metric(label="ACTIVE DEPARTMENTS", value=stats["total_departments"], delta="Verified")
         with c3:
@@ -335,38 +358,36 @@ if user_role == "admin":
 
         st.write("")
 
-        # Two Column Split from Figma: Recent Activities (Left) + Quick Actions & Alert (Right)
         col_left, col_right = st.columns([2, 1])
 
         with col_left:
             st.markdown("""
             <div class="figma-card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px;">
-                    <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Recent Activities</h3>
-                    <span style="font-size: 13px; color: #2563eb; font-weight: 600; cursor: pointer;">Live Log</span>
+                    <h3 style="font-size: 17px; font-weight: 700; color: #ffffff; margin: 0;">Recent Activities</h3>
+                    <span style="font-size: 13px; color: #38bdf8; font-weight: 700;">Live Feed</span>
                 </div>
             """, unsafe_allow_html=True)
 
-            # Sample dynamic activities from database
             notices = get_announcements()
             if students:
                 latest_student = students[-1]
                 st.markdown(f"""
                 <div class="activity-row">
-                    <div class="activity-icon" style="background-color: #eff6ff; color: #2563eb;">👤</div>
+                    <div class="activity-icon" style="background-color: rgba(37, 99, 235, 0.2); color: #60a5fa;">👤</div>
                     <div>
-                        <div style="font-size: 14px; font-weight: 600; color: #1e293b;">New student registered</div>
-                        <div style="font-size: 12px; color: #64748b;">{latest_student['name']} ({latest_student['roll_number']}) — {latest_student['department']} department</div>
+                        <div style="font-size: 14px; font-weight: 600; color: #f8fafc;">New student enrolled</div>
+                        <div style="font-size: 12px; color: #94a3b8;">{latest_student['name']} ({latest_student['roll_number']}) — {latest_student['department']} department</div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
             st.markdown("""
                 <div class="activity-row">
-                    <div class="activity-icon" style="background-color: #fef3c7; color: #d97706;">📅</div>
+                    <div class="activity-icon" style="background-color: rgba(217, 119, 6, 0.2); color: #fbbf24;">📅</div>
                     <div>
-                        <div style="font-size: 14px; font-weight: 600; color: #1e293b;">Attendance records synchronized</div>
-                        <div style="font-size: 12px; color: #64748b;">Daily attendance verified across active engineering cohorts</div>
+                        <div style="font-size: 14px; font-weight: 600; color: #f8fafc;">Daily attendance synchronized</div>
+                        <div style="font-size: 12px; color: #94a3b8;">Attendance records published to student portals</div>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
@@ -374,20 +395,20 @@ if user_role == "admin":
             if notices:
                 st.markdown(f"""
                 <div class="activity-row">
-                    <div class="activity-icon" style="background-color: #f3e8ff; color: #9333ea;">📢</div>
+                    <div class="activity-icon" style="background-color: rgba(147, 51, 234, 0.2); color: #c084fc;">📢</div>
                     <div>
-                        <div style="font-size: 14px; font-weight: 600; color: #1e293b;">{notices[0][0]}</div>
-                        <div style="font-size: 12px; color: #64748b;">{notices[0][1][:65]}...</div>
+                        <div style="font-size: 14px; font-weight: 600; color: #f8fafc;">{notices[0][0]}</div>
+                        <div style="font-size: 12px; color: #94a3b8;">{notices[0][1][:65]}...</div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
             st.markdown("</div>", unsafe_allow_html=True)
 
-            # Institutional Early Warning Table
+            # Performance Warning
             st.markdown("""
             <div class="figma-card">
-                <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 12px 0;">Academic Intervention Roster</h3>
+                <h3 style="font-size: 17px; font-weight: 700; color: #ffffff; margin: 0 0 12px 0;">Academic Intervention Roster</h3>
             """, unsafe_allow_html=True)
             with get_connection() as conn:
                 marks_all = pd.read_sql_query("""
@@ -407,7 +428,7 @@ if user_role == "admin":
                         "failed_subjects": "Backlogs"
                     }).round({"Average": 1}), use_container_width=True, hide_index=True)
                 else:
-                    st.success("✅ All enrolled students are meeting minimum passing criteria.")
+                    st.success("✅ All enrolled students meet academic standing criteria.")
             else:
                 st.info("Performance stats will calculate automatically when marks are entered.")
             st.markdown("</div>", unsafe_allow_html=True)
@@ -415,14 +436,14 @@ if user_role == "admin":
         with col_right:
             st.markdown("""
             <div class="figma-card">
-                <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 14px 0;">Quick Actions</h3>
+                <h3 style="font-size: 17px; font-weight: 700; color: #ffffff; margin: 0 0 14px 0;">Quick Actions</h3>
             """, unsafe_allow_html=True)
 
-            if st.button("➕ Add Student", key="qa_add_st", use_container_width=True):
+            if st.button("➕ Add New Student", key="qa_add_st", use_container_width=True):
                 st.session_state.current_page = "Students"
                 st.rerun()
 
-            if st.button("📅 Mark Attendance", key="qa_att", use_container_width=True):
+            if st.button("📅 Mark Class Attendance", key="qa_att", use_container_width=True):
                 st.session_state.current_page = "Attendance"
                 st.rerun()
 
@@ -434,21 +455,21 @@ if user_role == "admin":
                 <div class="action-required-card">
                     <div class="action-required-title">! Action Required</div>
                     <div class="action-required-desc">
-                        End-of-term attendance reviews require validation. Flagged students with &lt; 75% attendance will require hall ticket clearance.
+                        End-of-term attendance reviews require validation. Flagged students with &lt; 75% attendance need clearance before admit cards unlock.
                     </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
-        # Figma Big Bottom Blue Banner Card
+        # Institutional Banner
         st.markdown("""
         <div class="institutional-banner">
-            <h2 style="font-size: 22px; font-weight: 800; margin: 0 0 8px 0; color: #ffffff;">Upgrading the Digital Infrastructure for 2026</h2>
+            <h2 style="font-size: 22px; font-weight: 800; margin: 0 0 8px 0; color: #ffffff;">Upgrading Campus Infrastructure for 2026</h2>
             <p style="color: #e0f2fe; font-size: 14px; max-width: 650px; line-height: 1.5; margin-bottom: 20px;">
-                Our campus migration to centralized student-faculty portals and live attendance sync is currently active.
+                Centralized academic portals, live marks recording, and dynamic student toolkits are now operational across all departments.
             </p>
-            <span style="background-color: #ffffff; color: #1e3a8a; font-weight: 700; padding: 10px 20px; border-radius: 8px; font-size: 13px; display: inline-block;">
-                Institutional Roadmap Active
+            <span style="background-color: #ffffff; color: #1e3a8a; font-weight: 800; padding: 10px 22px; border-radius: 8px; font-size: 13px; display: inline-block;">
+                System Status: Online
             </span>
         </div>
         """, unsafe_allow_html=True)
@@ -458,7 +479,7 @@ if user_role == "admin":
 
     elif st.session_state.current_page == "Attendance":
         st.title("📅 Attendance Registry")
-        st.markdown("<p style='color: #64748b;'>Record daily student attendance by department and subject.</p>", unsafe_allow_html=True)
+        st.markdown("<p style='color: #94a3b8;'>Record daily student attendance by department and subject.</p>", unsafe_allow_html=True)
 
         col_a1, col_a2, col_a3 = st.columns(3)
         with col_a1:
@@ -596,8 +617,8 @@ else:
     if st.session_state.current_page == "My Academic Profile":
         st.markdown(f"""
         <div style="margin-bottom: 20px;">
-            <h1 style="font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">Welcome back, {student.get('name', 'Student')}</h1>
-            <p style="color: #64748b; font-size: 14px; margin: 0;">Academic Atelier Enrolled Candidate Dashboard</p>
+            <h1 style="font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 4px;">Welcome back, {student.get('name', 'Student')}</h1>
+            <p style="color: #94a3b8; font-size: 15px; margin: 0;">Institutional Candidate Dashboard</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -605,31 +626,31 @@ else:
         with col1:
             st.markdown(f"""
             <div class="figma-card">
-                <h3 style="margin-top:0; color: #0f172a;">{student.get('name')}</h3>
-                <p style="color: #2563eb; font-weight: 700; font-size: 15px; margin-bottom: 12px;">Roll: {student.get('roll_number')}</p>
-                <hr style="border: 0.5px solid #e2e8f0; margin: 12px 0;">
+                <h3 style="margin-top:0; color: #ffffff;">{student.get('name')}</h3>
+                <p style="color: #38bdf8; font-weight: 800; font-size: 16px; margin-bottom: 12px;">Roll: {student.get('roll_number')}</p>
+                <hr style="border: 0.5px solid rgba(255,255,255,0.1); margin: 12px 0;">
                 <p style="font-size:14px; margin:6px 0;"><strong>Department:</strong> {student.get('department')}</p>
                 <p style="font-size:14px; margin:6px 0;"><strong>Academic Year:</strong> Year {student.get('year')}</p>
                 <p style="font-size:14px; margin:6px 0;"><strong>Email:</strong> {student.get('email')}</p>
-                <p style="font-size:14px; margin:6px 0;"><strong>Status:</strong> <span style="color:#16a34a; font-weight:600;">Active Enrolled</span></p>
+                <p style="font-size:14px; margin:6px 0;"><strong>Status:</strong> <span style="color:#34d399; font-weight:700;">Active Enrolled</span></p>
             </div>
             """, unsafe_allow_html=True)
 
             with st.expander("🪪 View Exam Admit Card"):
                 st.markdown(f"""
-                <div style="background: #ffffff; border: 2px solid #2563eb; border-radius: 12px; padding: 18px; box-shadow: 0 4px 12px rgba(37,99,235,0.1);">
-                    <div style="text-align: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
-                        <h4 style="color: #1e3a8a; margin: 0;">ACADEMIC ATELIER</h4>
-                        <p style="color: #64748b; font-size: 11px; margin: 0;">SEMESTER ADMIT CARD</p>
+                <div style="background: rgba(15, 23, 42, 0.95); border: 2px solid #38bdf8; border-radius: 12px; padding: 18px; box-shadow: 0 8px 24px rgba(56,189,248,0.25);">
+                    <div style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                        <h4 style="color: #38bdf8; margin: 0;">ACADEMIC ATELIER</h4>
+                        <p style="color: #94a3b8; font-size: 11px; margin: 0;">SEMESTER EXAMINATION ADMIT CARD</p>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-top: 14px; font-size: 13px;">
                         <div>
                             <p style="margin:4px 0;"><strong>Name:</strong> {student.get('name')}</p>
-                            <p style="margin:4px 0;"><strong>Roll:</strong> {student.get('roll_number')}</p>
+                            <p style="margin:4px 0;"><strong>Roll:</strong> <span style="color:#38bdf8;">{student.get('roll_number')}</span></p>
                             <p style="margin:4px 0;"><strong>Dept:</strong> {student.get('department')}</p>
                             <p style="margin:4px 0;"><strong>Year:</strong> Year {student.get('year')}</p>
                         </div>
-                        <div style="border: 1px dashed #cbd5e1; width: 80px; height: 100px; display:flex; align-items:center; justify-content:center; border-radius: 6px;">
+                        <div style="border: 1px dashed #64748b; width: 80px; height: 100px; display:flex; align-items:center; justify-content:center; border-radius: 6px;">
                             <span style="font-size: 10px; color:#94a3b8;">Photo</span>
                         </div>
                     </div>
@@ -639,18 +660,18 @@ else:
         with col2:
             st.markdown("""
             <div class="figma-card">
-                <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 12px 0;">Institutional Bulletins</h3>
+                <h3 style="font-size: 17px; font-weight: 700; color: #ffffff; margin: 0 0 12px 0;">Institutional Bulletins</h3>
             """, unsafe_allow_html=True)
             notices = get_announcements()
             if notices:
                 for title, msg, dt in notices:
                     st.markdown(f"""
-                    <div style="border-bottom: 1px solid #f1f5f9; padding: 10px 0;">
+                    <div style="border-bottom: 1px solid rgba(255,255,255,0.08); padding: 10px 0;">
                         <div style="display:flex; justify-content:space-between;">
-                            <strong style="color:#0f172a;">{title}</strong>
+                            <strong style="color:#38bdf8;">📌 {title}</strong>
                             <span style="font-size:12px; color:#94a3b8;">{dt}</span>
                         </div>
-                        <p style="font-size:13px; color:#475569; margin: 4px 0 0 0;">{msg}</p>
+                        <p style="font-size:13px; color:#cbd5e1; margin: 4px 0 0 0;">{msg}</p>
                     </div>
                     """, unsafe_allow_html=True)
             else:
@@ -658,7 +679,7 @@ else:
             st.markdown("</div>", unsafe_allow_html=True)
 
     elif st.session_state.current_page == "My Attendance":
-        st.title("📅 My Attendance")
+        st.title("📅 My Attendance Status")
         summary = get_student_attendance_summary(student_id)
         if summary:
             df = pd.DataFrame(summary)
@@ -679,7 +700,7 @@ else:
                     st.write(a['description'])
                     with st.form(f"sub_{a['id']}"):
                         lnk = st.text_input("Submission URL (Drive / GitHub)")
-                        if st.form_submit_button("Submit"):
+                        if st.form_submit_button("Submit Work"):
                             submit_assignment(a['id'], student_id, lnk)
                             st.success("Submitted successfully!")
         else:
@@ -696,7 +717,7 @@ else:
             st.info("Timetable not available yet.")
 
     elif st.session_state.current_page == "Student Fees":
-        st.title("💳 Fee Invoices")
+        st.title("💳 Fee Clearance Status")
         fees = get_student_fees(student_id)
         if fees:
             st.dataframe(pd.DataFrame(fees).rename(columns={
