@@ -20,7 +20,7 @@ def ensure_extended_schema():
     with get_connection() as conn:
         cursor = conn.cursor()
 
-        # Students Table
+        # 1. Students Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS students (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,14 +33,13 @@ def ensure_extended_schema():
             )
         """)
 
-        # Safely verify password column exists
+        # Check and add password column if it was created in older version
         cursor.execute("PRAGMA table_info(students)")
         existing_cols = [row[1] for row in cursor.fetchall()]
         if "password" not in existing_cols:
             cursor.execute("ALTER TABLE students ADD COLUMN password TEXT DEFAULT 'student123'")
-            conn.commit()
 
-        # Courses Table
+        # 2. Courses Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS courses (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,7 +50,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Marks Table
+        # 3. Marks Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS marks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,7 +61,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Announcements Table
+        # 4. Announcements Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS announcements (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -72,7 +71,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Attendance Table
+        # 5. Attendance Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS attendance (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -85,7 +84,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Assignments Table
+        # 6. Assignments Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS assignments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -97,7 +96,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Submissions Table
+        # 7. Assignment Submissions Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS assignment_submissions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -112,7 +111,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Timetable Table
+        # 8. Timetable Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS timetable (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -125,7 +124,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Fee Dues Table
+        # 9. Fee Dues Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS fee_dues (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -138,7 +137,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Feedback Table
+        # 10. Feedback Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS feedback (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -153,6 +152,7 @@ def ensure_extended_schema():
 
         conn.commit()
 
+# Run migrations immediately on import
 ensure_extended_schema()
 
 
