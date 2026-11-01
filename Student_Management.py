@@ -12,17 +12,22 @@ from database import (
 
 # Header Section
 st.title("👨‍🎓 Student Management")
-st.markdown("<p style='color: #94a3b8;'>Register, search, update, and manage student records.</p>", unsafe_allow_html=True)
+st.markdown("<p style='color: #94a3b8;'>Register, bulk-import, search, update, and manage student records.</p>", unsafe_allow_html=True)
 st.divider()
 
 departments = ["Mechanical", "Computer Science", "Electrical", "Civil", "Electronics", "Information Technology"]
 academic_years = [1, 2, 3, 4]
 
 # Tabs for management operations
-tab_add, tab_view, tab_edit = st.tabs(["➕ Add Student", "📋 Student Directory", "✏️ Edit / Delete"])
+tab_add, tab_bulk, tab_view, tab_edit = st.tabs([
+    "➕ Add Student", 
+    "📥 Bulk Import CSV", 
+    "📋 Student Directory", 
+    "✏️ Edit / Delete"
+])
 
 # ==========================================
-# TAB 1: ADD STUDENT
+# TAB 1: ADD SINGLE STUDENT
 # ==========================================
 with tab_add:
     st.subheader("Register New Student")
@@ -59,7 +64,42 @@ with tab_add:
                     st.error(f"Failed to register student. Roll number might already exist. Error: {e}")
 
 # ==========================================
-# TAB 2: VIEW & SEARCH
+# TAB 2: BULK CSV IMPORT
+# ==========================================
+with tab_bulk:
+    st.subheader("📥 Bulk Student Registration via CSV")
+    st.write("Upload a CSV file containing columns: `name`, `roll_number`, `email`, `department`, `year`")
+    uploaded_file = st.file_uploader("Upload Class Roster (.csv)", type=["csv"])
+
+    if uploaded_file:
+        df_upload = pd.read_csv(uploaded_file)
+        st.write("Preview of Uploaded Data:")
+        st.dataframe(df_upload.head(), use_container_width=True)
+
+        required_cols = {"name", "roll_number", "email", "department", "year"}
+        if required_cols.issubset(set(df_upload.columns)):
+            if st.button("🚀 Enroll All Students", use_container_width=True):
+                success_count = 0
+                for _, row in df_upload.iterrows():
+                    try:
+                        add_student(
+                            name=str(row["name"]),
+                            roll_number=str(row["roll_number"]),
+                            email=str(row["email"]),
+                            department=str(row["department"]),
+                            year=int(row["year"]),
+                            password="student123"
+                        )
+                        success_count += 1
+                    except Exception:
+                        pass
+                st.success(f"Successfully registered {success_count} students!")
+                st.rerun()
+        else:
+            st.error(f"CSV must contain the following exact columns: {list(required_cols)}")
+
+# ==========================================
+# TAB 3: VIEW & SEARCH
 # ==========================================
 with tab_view:
     st.subheader("Student Directory")
@@ -87,7 +127,7 @@ with tab_view:
         st.info("No matching student records found.")
 
 # ==========================================
-# TAB 3: EDIT & DELETE
+# TAB 4: EDIT & DELETE
 # ==========================================
 with tab_edit:
     st.subheader("Update or Remove Student Record")
