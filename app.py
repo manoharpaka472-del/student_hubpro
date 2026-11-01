@@ -44,7 +44,7 @@ st.session_state["_logout_rendered"] = False
 # ==========================================
 st.markdown("""
 <style>
-    /* Architectural Campus Photo Background with Gradient Blend */
+    /* Architectural Campus Photo Background with Deep Mesh Blend */
     .stApp {
         background: linear-gradient(rgba(10, 15, 30, 0.86), rgba(15, 23, 42, 0.94)),
                     url("https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070&auto=format&fit=crop") no-repeat center center fixed !important;
@@ -53,7 +53,6 @@ st.markdown("""
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
     }
 
-    /* Headings and Typography Highlights */
     h1, h2, h3, h4 {
         color: #ffffff !important;
         font-weight: 800 !important;
@@ -185,7 +184,7 @@ st.markdown("""
         box-shadow: 0 12px 32px rgba(37, 99, 235, 0.4);
     }
 
-    /* Inputs, Selectboxes & Textareas styling */
+    /* Input & Table styling */
     .stTextInput input, .stSelectbox select, .stTextArea textarea, .stDateInput input, .stNumberInput input {
         background-color: rgba(15, 23, 42, 0.85) !important;
         color: #f8fafc !important;
@@ -513,7 +512,7 @@ if user_role == "admin":
                     st.success("✅ Attendance saved successfully!")
 
     elif st.session_state.current_page == "Courses & Marks":
-        render_page(["Marks_Management.py", "2_Marks_Management.py", "Course_Management.py"])
+        render_page(["Marks_Management.py", "2_Marks_Management.py", "Course_Management.py"])[cite: 10]
 
     elif st.session_state.current_page == "Assignments":
         st.title("📂 Assignments Desk")
