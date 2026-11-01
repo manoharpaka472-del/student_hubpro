@@ -91,7 +91,6 @@ with tab_delete:
     st.subheader("🗑️ Permanently Remove Marks")
     st.warning("⚠️ Deleting marks will remove them permanently from the database and update student transcripts immediately.")
 
-    # Fetch marks with unique ID
     with get_connection() as conn:
         marks_with_ids = pd.read_sql_query("""
             SELECT 
@@ -114,13 +113,13 @@ with tab_delete:
         with col_single:
             st.markdown("##### 1. Delete Single Subject Entry")
             options = {
-                f"{r['roll_number']} | {r['name']} — {r['subject']} ({r['marks']} marks) [ID: {r['mark_id']}]": r['mark_id']
+                f"{r['roll_number']} | {r['name']} — {r['subject']} ({r['marks']} marks) [ID: {r['mark_id']}]": int(r['mark_id'])
                 for _, r in marks_with_ids.iterrows()
             }
             selected_option = st.selectbox("Select Record to Delete:", list(options.keys()))
             selected_mark_id = options[selected_option]
 
-            if st.button("🗑️ Delete Selected Entry", use_container_width=True, type="primary"):
+            if st.button("🗑️ Delete Selected Entry", use_container_width=True):
                 delete_single_mark(selected_mark_id)
                 st.success("Record deleted permanently from database!")
                 st.rerun()
@@ -129,7 +128,7 @@ with tab_delete:
         with col_bulk:
             st.markdown("##### 2. Clear All Marks for a Student")
             student_options = {
-                f"{s['roll_number']} - {s['name']} ({s['department']})": s["student_id"]
+                f"{s['roll_number']} - {s['name']} ({s['department']})": int(s["student_id"])
                 for _, s in marks_with_ids.drop_duplicates(subset=["student_id"]).iterrows()
             }
             selected_st_label = st.selectbox("Select Student:", list(student_options.keys()))
@@ -137,7 +136,7 @@ with tab_delete:
 
             if st.button("⚠️ Clear All Marks for Selected Student", use_container_width=True):
                 delete_all_marks_for_student(target_student_id)
-                st.success(f"All mark records permanently deleted for {selected_st_label.split(' - ')[1]}!")
+                st.success("All mark records permanently deleted!")
                 st.rerun()
 
     else:
