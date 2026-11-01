@@ -546,4 +546,4 @@ else:
                 color="marks",
                 color_continuous_scale="Blues"
             )
-            fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba
+            fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba"
