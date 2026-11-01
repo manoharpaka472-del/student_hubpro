@@ -34,71 +34,73 @@ st.session_state["_logout_rendered"] = False
 # ==========================================
 st.markdown("""
 <style>
-    /* 3D Animated Mesh Gradient Background */
-    @keyframes gradientShift {
+    /* Full Fluid Animated Background */
+    @keyframes deepSpaceMesh {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
 
     .stApp {
-        background: linear-gradient(-45deg, #070a13, #0f172a, #0c1c38, #050b14);
-        background-size: 400% 400%;
-        animation: gradientShift 16s ease infinite;
+        background: linear-gradient(-45deg, #050814, #0b1536, #091c2e, #020617);
+        background-size: 300% 300%;
+        animation: deepSpaceMesh 18s ease infinite;
         color: #f1f5f9;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* Radial grid overlay */
+    /* Cyber Geometric Grid Overlay */
     .stApp::before {
         content: "";
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
         background-image: 
-            linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-        background-size: 32px 32px;
+            linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+        background-size: 36px 36px;
         pointer-events: none;
         z-index: 0;
     }
 
-    /* Sidebar Glassmorphism */
+    /* Glassmorphism Sidebar */
     [data-testid="stSidebar"] {
-        background-color: rgba(15, 23, 42, 0.88) !important;
-        backdrop-filter: blur(14px) !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background: rgba(11, 19, 43, 0.85) !important;
+        backdrop-filter: blur(16px) !important;
+        border-right: 1px solid rgba(56, 189, 248, 0.15) !important;
     }
 
-    /* 3D Tactile Animated Buttons */
+    /* 3D Animated Tactile Buttons */
     .stButton>button {
         width: 100%;
         background: linear-gradient(145deg, #1e293b, #0f172a) !important;
         color: #f8fafc !important;
         font-weight: 600 !important;
-        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        border: 1px solid rgba(56, 189, 248, 0.25) !important;
         border-radius: 12px !important;
-        padding: 12px 18px !important;
+        padding: 12px 20px !important;
         margin-bottom: 8px !important;
-        box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+        box-shadow: 0 6px 14px -2px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
         transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
         transform: perspective(600px) translateZ(0);
+        position: relative;
+        overflow: hidden;
     }
     .stButton>button:hover {
-        background: linear-gradient(145deg, #2563eb, #1d4ed8) !important;
+        background: linear-gradient(145deg, #0284c7, #2563eb) !important;
         color: #ffffff !important;
-        transform: perspective(600px) translateY(-3px) translateZ(6px);
-        box-shadow: 0 12px 24px -4px rgba(37, 99, 235, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-        border-color: rgba(147, 197, 253, 0.5) !important;
+        transform: perspective(600px) translateY(-3px) translateZ(8px);
+        box-shadow: 0 12px 24px -4px rgba(2, 132, 199, 0.6), 0 0 16px rgba(56, 189, 248, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+        border-color: rgba(147, 197, 253, 0.8) !important;
     }
     .stButton>button:active {
         transform: perspective(600px) translateY(2px) translateZ(-4px);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6) !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8) !important;
     }
 
-    /* 3D Floating Stat Metric Cards */
+    /* Floating Luminous Metric Cards */
     div[data-testid="stMetric"] {
         background: linear-gradient(135deg, rgba(30, 41, 59, 0.75), rgba(15, 23, 42, 0.95)) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(56, 189, 248, 0.2) !important;
         padding: 20px 22px !important;
         border-radius: 16px !important;
         box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.6) !important;
@@ -107,8 +109,8 @@ st.markdown("""
     }
     div[data-testid="stMetric"]:hover {
         transform: translateY(-5px);
-        border-color: rgba(56, 189, 248, 0.5) !important;
-        box-shadow: 0 16px 32px -4px rgba(56, 189, 248, 0.2) !important;
+        border-color: rgba(56, 189, 248, 0.7) !important;
+        box-shadow: 0 16px 32px -4px rgba(56, 189, 248, 0.3) !important;
     }
     div[data-testid="stMetricLabel"] p {
         color: #94a3b8 !important;
@@ -206,6 +208,20 @@ if user_role == "admin":
         st.session_state.current_page = "Admin Announcements"
         st.rerun()
 
+    st.sidebar.divider()
+    # Admin Quick SQLite Backup
+    try:
+        with open("students.db", "rb") as db_file:
+            st.sidebar.download_button(
+                label="💾 Backup Database (.db)",
+                data=db_file,
+                file_name="students_backup.db",
+                mime="application/x-sqlite3",
+                use_container_width=True
+            )
+    except FileNotFoundError:
+        pass
+
 else:
     student = st.session_state.get("student_info", {})
     st.sidebar.markdown('<span class="role-badge student-badge">STUDENT PORTAL</span>', unsafe_allow_html=True)
@@ -225,7 +241,7 @@ else:
         st.session_state.current_page = "My Marks"
         st.rerun()
 
-    if st.sidebar.button("🛠️  Academic Toolkit (SGPA & Bunk)", use_container_width=True):
+    if st.sidebar.button("🛠️  Academic Toolkit (CGPA & Bunk)", use_container_width=True):
         st.session_state.current_page = "Academic Tools"
         st.rerun()
 
@@ -234,7 +250,7 @@ else:
         st.rerun()
 
 st.sidebar.divider()
-st.sidebar.caption("StudentHub Enterprise Suite v3.2")
+st.sidebar.caption("StudentHub Enterprise Suite v3.5")
 
 
 # ==========================================
@@ -326,11 +342,11 @@ if user_role == "admin":
 
         st.divider()
 
-        # Institutional Student Directory & Export
+        # Student Directory & Export
         st.subheader("🔍 Institutional Student Directory")
         if students:
             df_st = pd.DataFrame(students)
-            query = st.text_input("Filter student directory by Name, Roll Number, or Department:", "")
+            query = st.text_input("Filter directory by Name, Roll Number, or Department:", "")
             if query:
                 df_st = df_st[
                     df_st["name"].str.contains(query, case=False, na=False) |
@@ -449,7 +465,7 @@ else:
             params=(student_id,)
         )
 
-    # 1. ACADEMIC PROFILE & NOTICES
+    # 1. ACADEMIC PROFILE, NOTICES & EXAM ADMIT CARD
     if st.session_state.current_page == "My Academic Profile":
         st.markdown('<span class="role-badge student-badge">VERIFIED PROFILE</span>', unsafe_allow_html=True)
         st.title(f"Welcome back, {student.get('name', 'Student')}!")
@@ -468,6 +484,31 @@ else:
                 <p><strong>Status:</strong> <span style="color:#34d399; font-weight:600;">Enrolled & Active</span></p>
             </div>
             """, unsafe_allow_html=True)
+
+            st.write("")
+            with st.expander("🪪 View & Print Exam Admit Card"):
+                st.markdown(f"""
+                <div style="background: rgba(15, 23, 42, 0.95); border: 2px solid #38bdf8; border-radius: 12px; padding: 20px; box-shadow: 0 8px 32px rgba(56, 189, 248, 0.2);">
+                    <div style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                        <h4 style="color: #38bdf8; margin: 0;">STUDENTHUB PRO ACADEMY</h4>
+                        <p style="color: #94a3b8; font-size: 11px; margin: 0;">SEMESTER EXAMINATION ADMIT CARD</p>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 14px;">
+                        <div style="font-size: 13px;">
+                            <p style="margin: 4px 0;"><strong>Name:</strong> {student.get('name')}</p>
+                            <p style="margin: 4px 0;"><strong>Roll:</strong> <span style="color:#38bdf8;">{student.get('roll_number')}</span></p>
+                            <p style="margin: 4px 0;"><strong>Dept:</strong> {student.get('department')}</p>
+                            <p style="margin: 4px 0;"><strong>Year:</strong> Year {student.get('year')}</p>
+                        </div>
+                        <div style="border: 1px dashed #64748b; width: 90px; height: 110px; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                            <span style="color: #64748b; font-size: 10px; text-align: center;">Photo</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 12px; background: rgba(30, 41, 59, 0.5); padding: 8px; border-radius: 6px; font-size: 11px; color: #94a3b8;">
+                        * Verified for Hall Entry. Mobile phones and unauthorized materials prohibited.
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
         with col2:
             st.subheader("📢 Campus Bulletin Board")
@@ -505,173 +546,4 @@ else:
                 color="marks",
                 color_continuous_scale="Blues"
             )
-            fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", yaxis_range=[0, 100])
-            st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.info("Marks records will appear once evaluated.")
-
-    # 2. STUDENT LIVE ATTENDANCE DASHBOARD
-    elif st.session_state.current_page == "My Attendance":
-        st.markdown('<span class="role-badge student-badge">ATTENDANCE REPORT</span>', unsafe_allow_html=True)
-        st.title("📅 My Attendance Records")
-
-        summary = get_student_attendance_summary(student_id)
-        records = get_student_attendance_records(student_id)
-
-        if summary:
-            st.subheader("📊 Subject-wise Attendance Breakdown")
-            df_summary = pd.DataFrame(summary)
-            df_summary["Percentage"] = (df_summary["attended_classes"] / df_summary["total_classes"]) * 100
-            df_summary["Status"] = df_summary["Percentage"].apply(
-                lambda x: "Eligible (>= 75%) ✅" if x >= 75 else "Shortage Alert (< 75%) ⚠️"
-            )
-
-            total_held = df_summary["total_classes"].sum()
-            total_present = df_summary["attended_classes"].sum()
-            overall_pct = (total_present / total_held * 100) if total_held > 0 else 0
-
-            m1, m2, m3 = st.columns(3)
-            m1.metric("Overall Attendance", f"{overall_pct:.1f}%")
-            m2.metric("Total Classes Conducted", int(total_held))
-            m3.metric("Classes Attended", int(total_present))
-
-            st.write("")
-            st.dataframe(
-                df_summary.rename(columns={
-                    "subject": "Subject Name",
-                    "total_classes": "Total Sessions",
-                    "attended_classes": "Attended",
-                    "Percentage": "Attendance %"
-                }).round({"Attendance %": 1}),
-                use_container_width=True,
-                hide_index=True
-            )
-
-            with st.expander("🔍 View Complete Date-wise Attendance History"):
-                if records:
-                    st.dataframe(pd.DataFrame(records).rename(columns={
-                        "date": "Date",
-                        "subject": "Subject",
-                        "status": "Attendance Status"
-                    }), use_container_width=True, hide_index=True)
-        else:
-            st.info("No attendance records have been marked by your faculty yet.")
-
-    # 3. MARKS & OFFICIAL TRANSCRIPT
-    elif st.session_state.current_page == "My Marks":
-        st.markdown('<span class="role-badge student-badge">EXAM RESULTS</span>', unsafe_allow_html=True)
-        st.title("📝 Official Semester Transcript")
-
-        if not marks_df.empty:
-            marks_df["Grade"] = marks_df["marks"].apply(
-                lambda x: "O (Outstanding)" if x >= 90 else (
-                    "A+ (Excellent)" if x >= 80 else (
-                        "A (Very Good)" if x >= 70 else (
-                            "B+ (Good)" if x >= 60 else (
-                                "B (Above Average)" if x >= 50 else (
-                                    "C (Pass)" if x >= 40 else "F (Fail)"
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-
-            st.dataframe(
-                marks_df.rename(columns={"subject": "Subject Name", "marks": "Marks (Out of 100)"}),
-                use_container_width=True,
-                hide_index=True
-            )
-
-            transcript_text = f"""
-=====================================================
-            OFFICIAL ACADEMIC TRANSCRIPT             
-=====================================================
-Student Name : {student.get('name')}
-Roll Number  : {student.get('roll_number')}
-Department   : {student.get('department')}
-Year         : {student.get('year')}
------------------------------------------------------
-Subject                      Marks    Grade
------------------------------------------------------
-"""
-            for _, row in marks_df.iterrows():
-                transcript_text += f"{row['subject']:<28} {row['marks']:<8} {row['Grade']}\n"
-            transcript_text += f"-----------------------------------------------------\nCumulative Average: {marks_df['marks'].mean():.2f}%\n====================================================="
-
-            col_d1, col_d2 = st.columns(2)
-            with col_d1:
-                st.download_button(
-                    "📥 Download Grade Report (CSV)",
-                    marks_df.to_csv(index=False).encode("utf-8"),
-                    f"{student.get('roll_number')}_marks.csv",
-                    "text/csv"
-                )
-            with col_d2:
-                st.download_button(
-                    "📄 Download Formal Transcript (.txt)",
-                    transcript_text.encode("utf-8"),
-                    f"{student.get('roll_number')}_transcript.txt",
-                    "text/plain"
-                )
-        else:
-            st.info("No exam records posted yet.")
-
-    # 4. STUDENT SUCCESS TOOLKIT (SGPA & BUNK BUFFER)
-    elif st.session_state.current_page == "Academic Tools":
-        st.markdown('<span class="role-badge student-badge">STUDENT CALCULATORS</span>', unsafe_allow_html=True)
-        st.title("🛠️ Academic Planning Toolkit")
-
-        tab_calc1, tab_calc2 = st.tabs(["🎯 Target SGPA / Score Estimator", "📅 Attendance & Bunk Margin Planner"])
-
-        with tab_calc1:
-            st.markdown("#### Estimate Required Final Exam Marks")
-            curr_pct = st.number_input("Current Midterm / Internal Score (%)", 0.0, 100.0, 65.0, 0.5)
-            target = st.number_input("Target Goal (%)", 0.0, 100.0, 75.0, 0.5)
-            weight = st.slider("Internal Assessment Weightage (%)", 10, 90, 40)
-
-            rem_w = 100 - weight
-            req = (target - (curr_pct * (weight / 100))) / (rem_w / 100)
-            if req <= 100:
-                st.success(f"You must score **{req:.1f}%** on the remaining semester exams to secure your {target:.1f}% goal!")
-            else:
-                st.error(f"Mathematically impossible: requires {req:.1f}% on remaining components.")
-
-        with tab_calc2:
-            st.markdown("#### Attendance Safety & Bunk Buffer Calculator")
-            total_cls = st.number_input("Total Scheduled Semester Classes", min_value=1, value=60)
-            attended = st.number_input("Classes Attended So Far", min_value=0, max_value=int(total_cls), value=50)
-
-            cur_att = (attended / total_cls) * 100
-            st.metric("Current Attendance", f"{cur_att:.1f}%")
-
-            if cur_att >= 75.0:
-                bunks = int((attended - (0.75 * total_cls)) / 0.75)
-                st.success(f"Safe zone! You can miss up to **{max(0, bunks)}** more classes while staying above the 75% exam threshold.")
-            else:
-                req_classes = int(((0.75 * total_cls) - attended) / 0.25)
-                st.error(f"Deficit! You must attend the next **{max(1, req_classes)}** consecutive classes without missing any to restore eligibility.")
-
-    # 5. ACCOUNT & PASSWORD MANAGEMENT
-    elif st.session_state.current_page == "Account Security":
-        st.markdown('<span class="role-badge student-badge">SECURITY</span>', unsafe_allow_html=True)
-        st.title("🔒 Change Portal Password")
-
-        with st.form("change_pwd_form"):
-            old_p = st.text_input("Current Password", type="password")
-            new_p = st.text_input("New Password", type="password")
-            confirm_p = st.text_input("Confirm New Password", type="password")
-            sub_pwd = st.form_submit_button("Update Password", use_container_width=True)
-
-            if sub_pwd:
-                current_stored = (student.get("password") or "student123").strip()
-                if old_p.strip() != current_stored:
-                    st.error("Current password does not match.")
-                elif new_p.strip() != confirm_p.strip():
-                    st.error("New passwords do not match.")
-                elif len(new_p.strip()) < 4:
-                    st.warning("Password must be at least 4 characters long.")
-                else:
-                    update_student_password(student["id"], new_p.strip())
-                    st.session_state["student_info"]["password"] = new_p.strip()
-                    st.success("Password updated successfully! Next time log in with your new password.")
+            fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba
