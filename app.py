@@ -512,7 +512,7 @@ if user_role == "admin":
                     st.success("✅ Attendance saved successfully!")
 
     elif st.session_state.current_page == "Courses & Marks":
-        render_page(["Marks_Management.py", "2_Marks_Management.py", "Course_Management.py"])[cite: 10]
+        render_page(["Marks_Management.py", "2_Marks_Management.py", "Course_Management.py"])
 
     elif st.session_state.current_page == "Assignments":
         st.title("📂 Assignments Desk")
