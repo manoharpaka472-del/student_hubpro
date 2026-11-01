@@ -4,6 +4,7 @@ import plotly.express as px
 import os
 
 from database import (
+    ensure_extended_schema,
     get_all_students,
     get_dashboard_stats,
     get_connection,
@@ -26,6 +27,9 @@ from database import (
     get_all_feedback
 )
 from auth import require_login, logout_button
+
+# Force schema verification on app launch
+ensure_extended_schema()
 
 # ==========================================
 # PAGE CONFIGURATION
@@ -412,7 +416,7 @@ if user_role == "admin":
             with get_connection() as conn:
                 marks_all = pd.read_sql_query("""
                     SELECT s.roll_number, s.name, s.department, AVG(m.marks) as avg_marks,
-                           SUM(CASE WHEN m.marks < 40 THEN 1 ELSE 0 END) as failed_subjects
+                       SUM(CASE WHEN m.marks < 40 THEN 1 ELSE 0 END) as failed_subjects
                     FROM students s
                     INNER JOIN marks m ON s.id = m.student_id
                     GROUP BY s.id
