@@ -97,7 +97,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Assignment Submissions Table
+        # Submissions Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS assignment_submissions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
