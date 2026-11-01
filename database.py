@@ -97,7 +97,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Submissions Table
+        # Assignment Submissions Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS assignment_submissions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -229,21 +229,21 @@ def update_student_password(student_id, new_password):
 
 
 # ==========================================
-# 4. MARKS CRUD & PERMANENT DELETE
+# 4. MARKS CRUD & PERMANENT DELETION
 # ==========================================
 
 def delete_single_mark(mark_id):
     """Permanently deletes an individual mark record by ID."""
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM marks WHERE id = ?", (mark_id,))
+        cursor.execute("DELETE FROM marks WHERE id = ?", (int(mark_id),))
         conn.commit()
 
 def delete_all_marks_for_student(student_id):
     """Permanently removes all marks associated with a student."""
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM marks WHERE student_id = ?", (student_id,))
+        cursor.execute("DELETE FROM marks WHERE student_id = ?", (int(student_id),))
         conn.commit()
 
 
