@@ -80,7 +80,7 @@ with tab_view:
     if not records_df.empty:
         st.dataframe(records_df, use_container_width=True, hide_index=True)
         csv_data = records_df.to_csv(index=False).encode("utf-8")
-        st.download_button("⬇ Download Marks CSV", csv_data, "academic_records.csv", "text/csv")[cite: 9]
+        st.download_button("⬇ Download Marks CSV", csv_data, "academic_records.csv", "text/csv")
     else:
         st.info("No academic marks recorded in the database yet.")
 
