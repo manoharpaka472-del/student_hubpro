@@ -33,7 +33,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Verify password column exists
+        # Safely verify password column exists
         cursor.execute("PRAGMA table_info(students)")
         existing_cols = [row[1] for row in cursor.fetchall()]
         if "password" not in existing_cols:
@@ -97,7 +97,7 @@ def ensure_extended_schema():
             )
         """)
 
-        # Assignment Submissions Table
+        # Submissions Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS assignment_submissions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -229,7 +229,26 @@ def update_student_password(student_id, new_password):
 
 
 # ==========================================
-# 4. DASHBOARD STATISTICS
+# 4. MARKS CRUD & PERMANENT DELETE
+# ==========================================
+
+def delete_single_mark(mark_id):
+    """Permanently deletes an individual mark record by ID."""
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM marks WHERE id = ?", (mark_id,))
+        conn.commit()
+
+def delete_all_marks_for_student(student_id):
+    """Permanently removes all marks associated with a student."""
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM marks WHERE student_id = ?", (student_id,))
+        conn.commit()
+
+
+# ==========================================
+# 5. DASHBOARD STATISTICS
 # ==========================================
 
 def get_dashboard_stats():
@@ -261,7 +280,7 @@ def get_dashboard_stats():
 
 
 # ==========================================
-# 5. CAMPUS ANNOUNCEMENTS
+# 6. CAMPUS ANNOUNCEMENTS
 # ==========================================
 
 def add_announcement(title, message):
@@ -283,7 +302,7 @@ def get_announcements():
 
 
 # ==========================================
-# 6. ATTENDANCE MANAGEMENT
+# 7. ATTENDANCE MANAGEMENT
 # ==========================================
 
 def mark_student_attendance(student_id, subject, date_str, status):
@@ -336,7 +355,7 @@ def get_student_attendance_records(student_id):
 
 
 # ==========================================
-# 7. ASSIGNMENTS & SUBMISSIONS
+# 8. ASSIGNMENTS & SUBMISSIONS
 # ==========================================
 
 def add_assignment(title, subject, department, deadline, description):
@@ -401,7 +420,7 @@ def grade_submission(submission_id, grade):
 
 
 # ==========================================
-# 8. TIMETABLE MANAGEMENT
+# 9. TIMETABLE MANAGEMENT
 # ==========================================
 
 def add_timetable_entry(department, year, day, time_slot, subject, room):
@@ -441,7 +460,7 @@ def get_timetable(department, year):
 
 
 # ==========================================
-# 9. FEES & DUES MANAGEMENT
+# 10. FEES & DUES MANAGEMENT
 # ==========================================
 
 def add_fee_due(student_id, fee_type, amount, due_date):
@@ -477,7 +496,7 @@ def update_fee_status(fee_id, status):
 
 
 # ==========================================
-# 10. FEEDBACK & COURSE RATINGS
+# 11. FEEDBACK & COURSE RATINGS
 # ==========================================
 
 def submit_feedback(student_id, subject, rating, comments):
