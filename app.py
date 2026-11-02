@@ -28,7 +28,7 @@ from database import (
 )
 from auth import require_login, logout_button
 
-# Force schema verification on app launch
+# Force schema verification on launch
 ensure_extended_schema()
 
 # ==========================================
@@ -44,11 +44,10 @@ st.set_page_config(
 st.session_state["_logout_rendered"] = False
 
 # ==========================================
-# MODERN CAMPUS BACKGROUND & VIBRANT 3D BUTTONS
+# STYLING & 3D BUTTONS
 # ==========================================
 st.markdown("""
 <style>
-    /* Architectural Campus Photo Background with Deep Mesh Blend */
     .stApp {
         background: linear-gradient(rgba(10, 15, 30, 0.86), rgba(15, 23, 42, 0.94)),
                     url("https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070&auto=format&fit=crop") no-repeat center center fixed !important;
@@ -67,7 +66,6 @@ st.markdown("""
         color: #e2e8f0 !important;
     }
 
-    /* Translucent Glassmorphism Sidebar */
     [data-testid="stSidebar"] {
         background: rgba(11, 19, 43, 0.92) !important;
         backdrop-filter: blur(16px) !important;
@@ -77,7 +75,6 @@ st.markdown("""
         color: #f1f5f9 !important;
     }
 
-    /* Vibrant 3D Buttons with Neon Shadow */
     .stButton>button {
         width: 100%;
         background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0284c7 100%) !important;
@@ -105,7 +102,6 @@ st.markdown("""
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
     }
 
-    /* Glass Cards */
     .figma-card {
         background: rgba(15, 23, 42, 0.82) !important;
         border: 1px solid rgba(56, 189, 248, 0.2) !important;
@@ -116,7 +112,6 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    /* Metric Cards */
     div[data-testid="stMetric"] {
         background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95)) !important;
         border: 1px solid rgba(56, 189, 248, 0.3) !important;
@@ -139,7 +134,6 @@ st.markdown("""
         text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
     }
 
-    /* Action Required Card */
     .action-required-card {
         background: rgba(124, 45, 18, 0.4) !important;
         border: 1px solid rgba(251, 146, 60, 0.5) !important;
@@ -159,7 +153,6 @@ st.markdown("""
         line-height: 1.4;
     }
 
-    /* Activity Rows */
     .activity-row {
         display: flex;
         align-items: center;
@@ -177,7 +170,6 @@ st.markdown("""
         margin-right: 14px;
     }
 
-    /* Institutional Glowing Banner */
     .institutional-banner {
         background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0284c7 100%);
         border: 1px solid rgba(255, 255, 255, 0.25);
@@ -188,7 +180,6 @@ st.markdown("""
         box-shadow: 0 12px 32px rgba(37, 99, 235, 0.4);
     }
 
-    /* Input & Table styling */
     .stTextInput input, .stSelectbox select, .stTextArea textarea, .stDateInput input, .stNumberInput input {
         background-color: rgba(15, 23, 42, 0.85) !important;
         color: #f8fafc !important;
@@ -416,7 +407,7 @@ if user_role == "admin":
             with get_connection() as conn:
                 marks_all = pd.read_sql_query("""
                     SELECT s.roll_number, s.name, s.department, AVG(m.marks) as avg_marks,
-                       SUM(CASE WHEN m.marks < 40 THEN 1 ELSE 0 END) as failed_subjects
+                           SUM(CASE WHEN m.marks < 40 THEN 1 ELSE 0 END) as failed_subjects
                     FROM students s
                     INNER JOIN marks m ON s.id = m.student_id
                     GROUP BY s.id
