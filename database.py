@@ -13,10 +13,10 @@ def get_connection():
 
 
 # ==========================================
-# 2. SCHEMA INITIALIZATION & AUTO-MIGRATIONS
+# 2. COMPLETE FRESH SCHEMA SETUP
 # ==========================================
 
-def ensure_extended_schema():
+def init_fresh_database():
     with get_connection() as conn:
         cursor = conn.cursor()
 
@@ -32,12 +32,6 @@ def ensure_extended_schema():
                 password TEXT DEFAULT 'student123'
             )
         """)
-
-        # Check and add password column if it was created in older version
-        cursor.execute("PRAGMA table_info(students)")
-        existing_cols = [row[1] for row in cursor.fetchall()]
-        if "password" not in existing_cols:
-            cursor.execute("ALTER TABLE students ADD COLUMN password TEXT DEFAULT 'student123'")
 
         # 2. Courses Table
         cursor.execute("""
@@ -57,7 +51,7 @@ def ensure_extended_schema():
                 student_id INTEGER NOT NULL,
                 subject TEXT NOT NULL,
                 marks REAL NOT NULL,
-                FOREIGN KEY (student_id) REFERENCES students(id)
+                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
             )
         """)
 
@@ -79,7 +73,7 @@ def ensure_extended_schema():
                 subject TEXT NOT NULL,
                 date TEXT NOT NULL,
                 status TEXT NOT NULL,
-                FOREIGN KEY (student_id) REFERENCES students(id),
+                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
                 UNIQUE(student_id, subject, date)
             )
         """)
@@ -105,8 +99,8 @@ def ensure_extended_schema():
                 submission_link TEXT NOT NULL,
                 grade TEXT DEFAULT 'Pending Review',
                 submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (assignment_id) REFERENCES assignments(id),
-                FOREIGN KEY (student_id) REFERENCES students(id),
+                FOREIGN KEY (assignment_id) REFERENCES assignments(id) ON DELETE CASCADE,
+                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
                 UNIQUE(assignment_id, student_id)
             )
         """)
@@ -133,7 +127,7 @@ def ensure_extended_schema():
                 amount REAL NOT NULL,
                 due_date TEXT NOT NULL,
                 status TEXT DEFAULT 'Unpaid',
-                FOREIGN KEY (student_id) REFERENCES students(id)
+                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
             )
         """)
 
@@ -146,14 +140,23 @@ def ensure_extended_schema():
                 rating INTEGER NOT NULL,
                 comments TEXT NOT NULL,
                 submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (student_id) REFERENCES students(id)
+                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
             )
         """)
 
         conn.commit()
 
-# Run migrations immediately on import
-ensure_extended_schema()
+# Initialize tables
+init_fresh_database()
+
+# Reset marks table so app starts completely fresh with 0 marks
+def clear_all_marks_fresh():
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM marks")
+        conn.commit()
+
+clear_all_marks_fresh()
 
 
 # ==========================================
@@ -229,7 +232,7 @@ def update_student_password(student_id, new_password):
 
 
 # ==========================================
-# 4. MARKS CRUD & PERMANENT DELETION
+# 4. MARKS CRUD & INDIVIDUAL REMOVAL
 # ==========================================
 
 def delete_single_mark(mark_id):
