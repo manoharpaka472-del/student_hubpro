@@ -44,77 +44,82 @@ st.set_page_config(
 st.session_state["_logout_rendered"] = False
 
 # ==========================================
-# STYLING & 3D BUTTONS
+# NEW PALETTE: OBSIDIAN INDIGO & NEON CYAN BUTTONS
 # ==========================================
 st.markdown("""
 <style>
+    /* Deep Obsidian & Midnight Indigo Gradient Canvas */
     .stApp {
-        background: linear-gradient(rgba(10, 15, 30, 0.86), rgba(15, 23, 42, 0.94)),
-                    url("https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070&auto=format&fit=crop") no-repeat center center fixed !important;
-        background-size: cover !important;
+        background: radial-gradient(circle at 15% 15%, #0f172a 0%, #090d16 50%, #030712 100%) !important;
+        background-attachment: fixed !important;
         color: #f8fafc !important;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
     }
 
+    /* Headings and Typography Highlights */
     h1, h2, h3, h4 {
         color: #ffffff !important;
         font-weight: 800 !important;
         letter-spacing: -0.5px;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
     }
     p, span, label, .stMarkdown {
         color: #e2e8f0 !important;
     }
 
+    /* Glassmorphism Dark Sidebar */
     [data-testid="stSidebar"] {
-        background: rgba(11, 19, 43, 0.92) !important;
+        background: rgba(9, 13, 22, 0.95) !important;
         backdrop-filter: blur(16px) !important;
-        border-right: 1px solid rgba(56, 189, 248, 0.25) !important;
+        border-right: 1px solid rgba(14, 165, 233, 0.2) !important;
     }
     [data-testid="stSidebar"] * {
         color: #f1f5f9 !important;
     }
 
+    /* Neon Cyber Cyan 3D Buttons */
     .stButton>button {
         width: 100%;
-        background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0284c7 100%) !important;
+        background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #06b6d4 100%) !important;
         color: #ffffff !important;
         font-weight: 700 !important;
         font-size: 14px !important;
-        border: 1px solid rgba(147, 197, 253, 0.45) !important;
+        border: 1px solid rgba(125, 211, 252, 0.5) !important;
         border-radius: 12px !important;
         padding: 12px 18px !important;
         margin-bottom: 8px !important;
-        box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+        box-shadow: 0 6px 18px -2px rgba(14, 165, 233, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
         transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
         transform: perspective(600px) translateZ(0);
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     }
     .stButton>button:hover {
-        background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%) !important;
+        background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%) !important;
         color: #ffffff !important;
         transform: perspective(600px) translateY(-3px) scale(1.02);
-        box-shadow: 0 12px 24px -2px rgba(6, 182, 212, 0.7), 0 0 18px rgba(56, 189, 248, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
-        border-color: #ffffff !important;
+        box-shadow: 0 12px 26px -2px rgba(16, 185, 129, 0.6), 0 0 18px rgba(6, 182, 212, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+        border-color: #a7f3d0 !important;
     }
     .stButton>button:active {
         transform: perspective(600px) translateY(2px) scale(0.98);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8) !important;
     }
 
+    /* Translucent Obsidian Glass Cards */
     .figma-card {
-        background: rgba(15, 23, 42, 0.82) !important;
-        border: 1px solid rgba(56, 189, 248, 0.2) !important;
+        background: rgba(15, 23, 42, 0.75) !important;
+        border: 1px solid rgba(14, 165, 233, 0.25) !important;
         border-radius: 16px !important;
         padding: 22px !important;
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
-        backdrop-filter: blur(12px) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5) !important;
+        backdrop-filter: blur(14px) !important;
         margin-bottom: 20px;
     }
 
+    /* Metric Cards */
     div[data-testid="stMetric"] {
         background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95)) !important;
-        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        border: 1px solid rgba(14, 165, 233, 0.35) !important;
         padding: 20px 22px !important;
         border-radius: 16px !important;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
@@ -134,6 +139,7 @@ st.markdown("""
         text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
     }
 
+    /* Alert / Action Required Card */
     .action-required-card {
         background: rgba(124, 45, 18, 0.4) !important;
         border: 1px solid rgba(251, 146, 60, 0.5) !important;
@@ -153,6 +159,7 @@ st.markdown("""
         line-height: 1.4;
     }
 
+    /* Activity Rows */
     .activity-row {
         display: flex;
         align-items: center;
@@ -170,20 +177,22 @@ st.markdown("""
         margin-right: 14px;
     }
 
+    /* Banner Highlight Card */
     .institutional-banner {
-        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0284c7 100%);
+        background: linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #06b6d4 100%);
         border: 1px solid rgba(255, 255, 255, 0.25);
         border-radius: 16px;
         padding: 32px;
         color: #ffffff;
         margin-top: 24px;
-        box-shadow: 0 12px 32px rgba(37, 99, 235, 0.4);
+        box-shadow: 0 12px 32px rgba(2, 132, 199, 0.4);
     }
 
+    /* Inputs, Selectboxes, & Textarea overrides */
     .stTextInput input, .stSelectbox select, .stTextArea textarea, .stDateInput input, .stNumberInput input {
-        background-color: rgba(15, 23, 42, 0.85) !important;
+        background-color: rgba(15, 23, 42, 0.9) !important;
         color: #f8fafc !important;
-        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        border: 1px solid rgba(14, 165, 233, 0.3) !important;
         border-radius: 10px !important;
     }
     .stTextInput input:focus, .stSelectbox select:focus, .stTextArea textarea:focus {
@@ -368,7 +377,7 @@ if user_role == "admin":
                 latest_student = students[-1]
                 st.markdown(f"""
                 <div class="activity-row">
-                    <div class="activity-icon" style="background-color: rgba(37, 99, 235, 0.2); color: #60a5fa;">👤</div>
+                    <div class="activity-icon" style="background-color: rgba(14, 165, 233, 0.2); color: #38bdf8;">👤</div>
                     <div>
                         <div style="font-size: 14px; font-weight: 600; color: #f8fafc;">New student enrolled</div>
                         <div style="font-size: 12px; color: #94a3b8;">{latest_student['name']} ({latest_student['roll_number']}) — {latest_student['department']} department</div>
@@ -399,7 +408,7 @@ if user_role == "admin":
 
             st.markdown("</div>", unsafe_allow_html=True)
 
-            # Performance Warning
+            # Performance Early Warning
             st.markdown("""
             <div class="figma-card">
                 <h3 style="font-size: 17px; font-weight: 700; color: #ffffff; margin: 0 0 12px 0;">Academic Intervention Roster</h3>
@@ -462,7 +471,7 @@ if user_role == "admin":
             <p style="color: #e0f2fe; font-size: 14px; max-width: 650px; line-height: 1.5; margin-bottom: 20px;">
                 Centralized academic portals, live marks recording, and dynamic student toolkits are now operational across all departments.
             </p>
-            <span style="background-color: #ffffff; color: #1e3a8a; font-weight: 800; padding: 10px 22px; border-radius: 8px; font-size: 13px; display: inline-block;">
+            <span style="background-color: #ffffff; color: #0284c7; font-weight: 800; padding: 10px 22px; border-radius: 8px; font-size: 13px; display: inline-block;">
                 System Status: Online
             </span>
         </div>
