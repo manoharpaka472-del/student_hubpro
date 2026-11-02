@@ -10,7 +10,6 @@ from database import (
     update_student
 )
 
-# Header Section
 st.title("👨‍🎓 Student Management")
 st.markdown("<p style='color: #94a3b8;'>Register, bulk-import, search, update, and manage student records.</p>", unsafe_allow_html=True)
 st.divider()
@@ -18,7 +17,6 @@ st.divider()
 departments = ["Mechanical", "Computer Science", "Electrical", "Civil", "Electronics", "Information Technology"]
 academic_years = [1, 2, 3, 4]
 
-# Tabs for management operations
 tab_add, tab_bulk, tab_view, tab_edit = st.tabs([
     "➕ Add Student", 
     "📥 Bulk Import CSV", 
