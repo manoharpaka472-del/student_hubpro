@@ -13,10 +13,10 @@ def get_connection():
 
 
 # ==========================================
-# 2. COMPLETE FRESH SCHEMA SETUP
+# 2. SCHEMA INITIALIZATION & AUTO-MIGRATIONS
 # ==========================================
 
-def init_fresh_database():
+def ensure_extended_schema():
     with get_connection() as conn:
         cursor = conn.cursor()
 
@@ -32,6 +32,12 @@ def init_fresh_database():
                 password TEXT DEFAULT 'student123'
             )
         """)
+
+        # Verify password column exists
+        cursor.execute("PRAGMA table_info(students)")
+        existing_cols = [row[1] for row in cursor.fetchall()]
+        if "password" not in existing_cols:
+            cursor.execute("ALTER TABLE students ADD COLUMN password TEXT DEFAULT 'student123'")
 
         # 2. Courses Table
         cursor.execute("""
@@ -146,17 +152,11 @@ def init_fresh_database():
 
         conn.commit()
 
-# Initialize tables
-init_fresh_database()
+# Alias for backwards compatibility
+init_fresh_database = ensure_extended_schema
 
-# Reset marks table so app starts completely fresh with 0 marks
-def clear_all_marks_fresh():
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM marks")
-        conn.commit()
-
-clear_all_marks_fresh()
+# Run schema creation on start
+ensure_extended_schema()
 
 
 # ==========================================
@@ -232,21 +232,25 @@ def update_student_password(student_id, new_password):
 
 
 # ==========================================
-# 4. MARKS CRUD & INDIVIDUAL REMOVAL
+# 4. MARKS CRUD & DELETION
 # ==========================================
 
 def delete_single_mark(mark_id):
-    """Permanently deletes an individual mark record by ID."""
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM marks WHERE id = ?", (int(mark_id),))
         conn.commit()
 
 def delete_all_marks_for_student(student_id):
-    """Permanently removes all marks associated with a student."""
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM marks WHERE student_id = ?", (int(student_id),))
+        conn.commit()
+
+def clear_all_marks_fresh():
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM marks")
         conn.commit()
 
 
