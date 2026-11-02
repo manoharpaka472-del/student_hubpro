@@ -28,7 +28,7 @@ from database import (
 )
 from auth import require_login, logout_button
 
-# Force schema verification on launch
+# Ensure tables exist
 ensure_extended_schema()
 
 # ==========================================
@@ -41,14 +41,12 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-st.session_state["_logout_rendered"] = False
-
 # ==========================================
 # MULTI-COLOR BUTTON SYSTEM & COSMIC BACKGROUND
 # ==========================================
 st.markdown("""
 <style>
-    /* Deep Cosmic Radial Mesh Background */
+    /* Deep Cosmic Radial Mesh Canvas */
     .stApp {
         background: radial-gradient(circle at 15% 15%, #0f1c3f 0%, #080d1a 50%, #03060f 100%) !important;
         background-attachment: fixed !important;
@@ -56,7 +54,6 @@ st.markdown("""
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
     }
 
-    /* Headings and Typography Highlights */
     h1, h2, h3, h4 {
         color: #ffffff !important;
         font-weight: 800 !important;
@@ -67,7 +64,7 @@ st.markdown("""
         color: #cbd5e1 !important;
     }
 
-    /* Glassmorphism Dark Sidebar */
+    /* Glassmorphic Dark Sidebar */
     [data-testid="stSidebar"] {
         background: rgba(8, 13, 26, 0.95) !important;
         backdrop-filter: blur(16px) !important;
@@ -77,7 +74,7 @@ st.markdown("""
         color: #f1f5f9 !important;
     }
 
-    /* Base 3D Tactile Button Settings */
+    /* 3D Tactile Base Button Settings */
     .stButton>button {
         width: 100%;
         color: #ffffff !important;
@@ -221,55 +218,6 @@ st.markdown("""
         text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
     }
 
-    /* Action Required Box */
-    .action-required-card {
-        background: rgba(124, 45, 18, 0.45) !important;
-        border: 1px solid rgba(251, 146, 60, 0.6) !important;
-        border-radius: 12px;
-        padding: 16px;
-        margin-top: 15px;
-    }
-    .action-required-title {
-        color: #fb923c !important;
-        font-weight: 800;
-        font-size: 14px;
-        margin-bottom: 6px;
-    }
-    .action-required-desc {
-        color: #fdba74 !important;
-        font-size: 13px;
-        line-height: 1.4;
-    }
-
-    /* Activity Rows */
-    .activity-row {
-        display: flex;
-        align-items: center;
-        padding: 12px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .activity-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        margin-right: 14px;
-    }
-
-    /* Big Institutional Banner */
-    .institutional-banner {
-        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #06b6d4 100%);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 16px;
-        padding: 32px;
-        color: #ffffff;
-        margin-top: 24px;
-        box-shadow: 0 12px 32px rgba(37, 99, 235, 0.45);
-    }
-
     /* Inputs, Selectboxes, & Textarea */
     .stTextInput input, .stSelectbox select, .stTextArea textarea, .stDateInput input, .stNumberInput input {
         background-color: rgba(15, 23, 42, 0.9) !important;
@@ -294,7 +242,7 @@ if "current_page" not in st.session_state:
 
 
 # ==========================================
-# SIDEBAR NAVIGATION WITH UNIQUE STYLED BUTTONS
+# SIDEBAR NAVIGATION
 # ==========================================
 logout_button()
 
@@ -489,7 +437,7 @@ if user_role == "admin":
 
         c1, c2, c3 = st.columns(3)
         with c1:
-            st.metric(label="TOTAL ENROLLED STUDENTS", value=f"{stats['total_students']:,}", delta="+4% this term")
+            st.metric(label="TOTAL ENROLLED STUDENTS", value=f"{stats['total_students']:,}", delta="Fresh System")
         with c2:
             st.metric(label="ACTIVE DEPARTMENTS", value=stats["total_departments"], delta="Verified")
         with c3:
@@ -520,16 +468,8 @@ if user_role == "admin":
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-
-            st.markdown("""
-                <div class="activity-row">
-                    <div class="activity-icon" style="background-color: rgba(217, 119, 6, 0.2); color: #fbbf24;">📅</div>
-                    <div>
-                        <div style="font-size: 14px; font-weight: 600; color: #f8fafc;">Daily attendance synchronized</div>
-                        <div style="font-size: 12px; color: #94a3b8;">Attendance records published to student portals</div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
+            else:
+                st.info("No activity records yet. Register students to begin logging actions.")
 
             if notices:
                 st.markdown(f"""
@@ -597,9 +537,9 @@ if user_role == "admin":
             st.markdown('</div>', unsafe_allow_html=True)
 
             st.markdown("""
-                <div class="action-required-card">
-                    <div class="action-required-title">! Action Required</div>
-                    <div class="action-required-desc">
+                <div style="background: rgba(124, 45, 18, 0.45); border: 1px solid rgba(251, 146, 60, 0.6); border-radius: 12px; padding: 16px; margin-top: 15px;">
+                    <div style="color: #fb923c; font-weight: 800; font-size: 14px; margin-bottom: 6px;">! Action Required</div>
+                    <div style="color: #fdba74; font-size: 13px; line-height: 1.4;">
                         End-of-term attendance reviews require validation. Flagged students with &lt; 75% attendance need clearance before admit cards unlock.
                     </div>
                 </div>
@@ -608,7 +548,7 @@ if user_role == "admin":
 
         # Institutional Banner
         st.markdown("""
-        <div class="institutional-banner">
+        <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #06b6d4 100%); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 16px; padding: 32px; color: #ffffff; margin-top: 24px; box-shadow: 0 12px 32px rgba(37, 99, 235, 0.45);">
             <h2 style="font-size: 22px; font-weight: 800; margin: 0 0 8px 0; color: #ffffff;">Upgrading Campus Infrastructure for 2026</h2>
             <p style="color: #e0f2fe; font-size: 14px; max-width: 650px; line-height: 1.5; margin-bottom: 20px;">
                 Centralized academic portals, live marks recording, and dynamic student toolkits are now operational across all departments.
@@ -639,7 +579,7 @@ if user_role == "admin":
             students_pool = [s for s in students_pool if s["department"] == dept_filter]
 
         if not students_pool:
-            st.info("No students found in the selected department.")
+            st.info("No students registered in the selected department.")
         elif not subject_name.strip():
             st.warning("Please specify a course subject name.")
         else:
@@ -702,6 +642,8 @@ if user_role == "admin":
                                     st.rerun()
                 else:
                     st.info("No submissions yet.")
+            else:
+                st.info("No assignments created yet.")
 
     elif st.session_state.current_page == "Timetable":
         st.title("🗓️ Department Timetable")
@@ -744,6 +686,8 @@ if user_role == "admin":
                 if gen_inv:
                     add_fee_due(st_map[sel], f_type, f_amt, str(f_due))
                     st.success("Invoice generated!")
+            else:
+                st.info("No students available to bill.")
         with tab2:
             with get_connection() as conn:
                 fees_df = pd.read_sql_query("SELECT s.roll_number, s.name, f.fee_type, f.amount, f.due_date, f.status FROM fee_dues f JOIN students s ON f.student_id = s.id ORDER BY f.id DESC", conn)
