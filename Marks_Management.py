@@ -1,143 +1,167 @@
-import streamlit as st
+import re
 import pandas as pd
+import streamlit as st
+
 from database import (
-    get_all_students, 
-    get_connection, 
-    delete_single_mark, 
-    delete_all_marks_for_student
+    add_student,
+    delete_student,
+    get_all_students,
+    search_students,
+    update_student
 )
 
-st.title("📝 Marks & Examination Records")
-st.markdown("<p style='color: #94a3b8;'>Assign, view, export, and delete academic marks.</p>", unsafe_allow_html=True)
+st.title("👨‍🎓 Student Management")
+st.markdown("<p style='color: #94a3b8;'>Register, bulk-import, search, update, and manage student records.</p>", unsafe_allow_html=True)
 st.divider()
 
-tab_add, tab_view, tab_delete = st.tabs(["➕ Assign Marks", "📋 Academic Records", "🗑️ Delete Marks"])
+departments = ["Mechanical", "Computer Science", "Electrical", "Civil", "Electronics", "Information Technology"]
+academic_years = [1, 2, 3, 4]
+
+tab_add, tab_bulk, tab_view, tab_edit = st.tabs([
+    "➕ Add Student", 
+    "📥 Bulk Import CSV", 
+    "📋 Student Directory", 
+    "✏️ Edit / Delete"
+])
 
 # ==========================================
-# TAB 1: ASSIGN / ADD MARKS
+# TAB 1: ADD SINGLE STUDENT
 # ==========================================
 with tab_add:
-    st.subheader("Enter Student Exam Score")
-    students = get_all_students()
+    st.subheader("Register New Student")
+    with st.form("add_student_form", clear_on_submit=True):
+        col1, col2 = st.columns(2)
+        with col1:
+            name = st.text_input("Full Name *", placeholder="e.g. Rahul Sharma")
+            roll_number = st.text_input("Roll Number *", placeholder="e.g. 2505A31020")
+            email = st.text_input("Email Address *", placeholder="e.g. rahul@example.com")
+        with col2:
+            dept = st.selectbox("Department *", departments)
+            year = st.selectbox("Academic Year *", academic_years)
+            default_pwd = st.text_input("Initial Password", value="student123", type="password")
 
-    if students:
-        student_dict = {f"{s['roll_number']} - {s['name']} ({s['department']})": s["id"] for s in students}
-        selected_student = st.selectbox("Select Student:", list(student_dict.keys()), key="assign_mark_student")
-        student_id = student_dict[selected_student]
+        submit_btn = st.form_submit_button("Register Student", use_container_width=True)
 
-        with st.form("add_mark_form", clear_on_submit=True):
-            col1, col2 = st.columns(2)
-            with col1:
-                subject_name = st.text_input("Course / Subject Name *", placeholder="e.g. Thermodynamics / Python")
-            with col2:
-                marks_scored = st.number_input("Marks Obtained (0 - 100) *", min_value=0.0, max_value=100.0, value=75.0, step=1.0)
-
-            if st.form_submit_button("Record Marks", use_container_width=True):
-                if not subject_name.strip():
-                    st.error("Please enter a valid subject name.")
-                else:
-                    with get_connection() as conn:
-                        cursor = conn.cursor()
-                        cursor.execute(
-                            "INSERT INTO marks (student_id, subject, marks) VALUES (?, ?, ?)",
-                            (student_id, subject_name.strip(), float(marks_scored))
-                        )
-                        conn.commit()
-                    st.success(f"Recorded {marks_scored} marks in {subject_name.strip()}!")
-                    st.rerun()
-    else:
-        st.info("No registered students found.")
+        if submit_btn:
+            if not name.strip() or not roll_number.strip() or not email.strip():
+                st.error("Please fill in all required fields marked with *.")
+            elif not re.match(r"[^@]+@[^@]+\.[^@]+", email.strip()):
+                st.error("Please enter a valid email address.")
+            else:
+                try:
+                    add_student(
+                        name=name.strip(),
+                        roll_number=roll_number.strip().upper(),
+                        email=email.strip(),
+                        department=dept,
+                        year=int(year),
+                        password=default_pwd.strip()
+                    )
+                    st.success(f"Student **{name.strip()}** ({roll_number.strip().upper()}) registered successfully!")
+                except Exception as e:
+                    st.error(f"Failed to register student. Roll number might already exist. Error: {e}")
 
 # ==========================================
-# TAB 2: VIEW & DOWNLOAD MARKS
+# TAB 2: BULK CSV IMPORT
+# ==========================================
+with tab_bulk:
+    st.subheader("📥 Bulk Student Registration via CSV")
+    st.write("Upload a CSV file containing columns: `name`, `roll_number`, `email`, `department`, `year`")
+    uploaded_file = st.file_uploader("Upload Class Roster (.csv)", type=["csv"])
+
+    if uploaded_file:
+        df_upload = pd.read_csv(uploaded_file)
+        st.write("Preview of Uploaded Data:")
+        st.dataframe(df_upload.head(), use_container_width=True)
+
+        required_cols = {"name", "roll_number", "email", "department", "year"}
+        if required_cols.issubset(set(df_upload.columns)):
+            if st.button("🚀 Enroll All Students", use_container_width=True):
+                success_count = 0
+                for _, row in df_upload.iterrows():
+                    try:
+                        add_student(
+                            name=str(row["name"]),
+                            roll_number=str(row["roll_number"]),
+                            email=str(row["email"]),
+                            department=str(row["department"]),
+                            year=int(row["year"]),
+                            password="student123"
+                        )
+                        success_count += 1
+                    except Exception:
+                        pass
+                st.success(f"Successfully registered {success_count} students!")
+                st.rerun()
+        else:
+            st.error(f"CSV must contain the following exact columns: {list(required_cols)}")
+
+# ==========================================
+# TAB 3: VIEW & SEARCH
 # ==========================================
 with tab_view:
-    st.subheader("📋 Student Academic Records")
+    st.subheader("Student Directory")
+    search_query = st.text_input("Search by Name, Roll No, or Department:", "", key="view_search_box")
 
-    with get_connection() as conn:
-        records_df = pd.read_sql_query("""
-            SELECT 
-                s.roll_number AS "Roll Number",
-                s.name AS "Student Name",
-                s.department AS "Department",
-                m.subject AS "Subject",
-                m.marks AS "Marks",
-                CASE WHEN m.marks >= 40 THEN 'Pass' ELSE 'Fail' END AS "Result",
-                CASE 
-                    WHEN m.marks >= 90 THEN 'O'
-                    WHEN m.marks >= 80 THEN 'A+'
-                    WHEN m.marks >= 70 THEN 'A'
-                    WHEN m.marks >= 60 THEN 'B+'
-                    WHEN m.marks >= 50 THEN 'B'
-                    WHEN m.marks >= 40 THEN 'C'
-                    ELSE 'F'
-                END AS "Grade"
-            FROM marks m
-            JOIN students s ON m.student_id = s.id
-            ORDER BY s.roll_number, m.subject
-        """, conn)
-
-    if not records_df.empty:
-        st.dataframe(records_df, use_container_width=True, hide_index=True)
-        csv_data = records_df.to_csv(index=False).encode("utf-8")
-        st.download_button("⬇ Download Marks CSV", csv_data, "academic_records.csv", "text/csv")
+    if search_query.strip():
+        students_list = search_students(search_query.strip())
     else:
-        st.info("No academic marks recorded in the database yet.")
+        students_list = get_all_students()
+
+    if students_list:
+        df_students = pd.DataFrame(students_list)
+        cols_to_show = ["roll_number", "name", "email", "department", "year"]
+        display_df = df_students[[c for c in cols_to_show if c in df_students.columns]].rename(
+            columns={
+                "roll_number": "Roll Number",
+                "name": "Full Name",
+                "email": "Email",
+                "department": "Department",
+                "year": "Year"
+            }
+        )
+        st.dataframe(display_df, use_container_width=True, hide_index=True)
+    else:
+        st.info("No matching student records found.")
 
 # ==========================================
-# TAB 3: PERMANENTLY DELETE MARKS
+# TAB 4: EDIT & DELETE
 # ==========================================
-with tab_delete:
-    st.subheader("🗑️ Permanently Remove Marks")
-    st.warning("⚠️ Deleting marks will remove them permanently from the database and update student transcripts immediately.")
+with tab_edit:
+    st.subheader("Update or Remove Student Record")
+    all_current = get_all_students()
 
-    with get_connection() as conn:
-        marks_with_ids = pd.read_sql_query("""
-            SELECT 
-                m.id AS mark_id,
-                s.id AS student_id,
-                s.roll_number,
-                s.name,
-                s.department,
-                m.subject,
-                m.marks
-            FROM marks m
-            JOIN students s ON m.student_id = s.id
-            ORDER BY s.roll_number, m.subject
-        """, conn)
+    if all_current:
+        student_options = {f"{s['roll_number']} - {s['name']}": s for s in all_current}
+        selected_label = st.selectbox("Select Student to Manage:", list(student_options.keys()))
+        selected_student = student_options[selected_label]
 
-    if not marks_with_ids.empty:
-        col_single, col_bulk = st.columns(2)
+        col_up, col_del = st.columns([2, 1])
 
-        # 1. Delete a Single Mark Record
-        with col_single:
-            st.markdown("##### 1. Delete Single Subject Entry")
-            options = {
-                f"{r['roll_number']} | {r['name']} — {r['subject']} ({r['marks']} marks) [ID: {r['mark_id']}]": int(r['mark_id'])
-                for _, r in marks_with_ids.iterrows()
-            }
-            selected_option = st.selectbox("Select Record to Delete:", list(options.keys()))
-            selected_mark_id = options[selected_option]
+        with col_up:
+            st.markdown("##### Update Details")
+            with st.form("edit_student_form"):
+                up_name = st.text_input("Full Name", value=selected_student["name"])
+                up_email = st.text_input("Email", value=selected_student["email"])
+                
+                dept_idx = departments.index(selected_student["department"]) if selected_student["department"] in departments else 0
+                up_dept = st.selectbox("Department", departments, index=dept_idx)
+                
+                year_idx = academic_years.index(selected_student["year"]) if selected_student["year"] in academic_years else 0
+                up_year = st.selectbox("Year", academic_years, index=year_idx)
 
-            if st.button("🗑️ Delete Selected Entry", use_container_width=True):
-                delete_single_mark(selected_mark_id)
-                st.success("Record deleted permanently from database!")
+                save_btn = st.form_submit_button("Save Changes", use_container_width=True)
+                if save_btn:
+                    update_student(selected_student["id"], up_name, up_email, up_dept, up_year)
+                    st.success("Student details updated successfully!")
+                    st.rerun()
+
+        with col_del:
+            st.markdown("##### Danger Zone")
+            st.write(f"Remove **{selected_student['name']}** permanently from the system.")
+            if st.button("🗑️ Delete Student", use_container_width=True):
+                delete_student(selected_student["id"])
+                st.warning(f"Student {selected_student['name']} deleted.")
                 st.rerun()
-
-        # 2. Clear All Marks for a Specific Student
-        with col_bulk:
-            st.markdown("##### 2. Clear All Marks for a Student")
-            student_options = {
-                f"{s['roll_number']} - {s['name']} ({s['department']})": int(s["student_id"])
-                for _, s in marks_with_ids.drop_duplicates(subset=["student_id"]).iterrows()
-            }
-            selected_st_label = st.selectbox("Select Student:", list(student_options.keys()))
-            target_student_id = student_options[selected_st_label]
-
-            if st.button("⚠️ Clear All Marks for Selected Student", use_container_width=True):
-                delete_all_marks_for_student(target_student_id)
-                st.success("All mark records permanently deleted!")
-                st.rerun()
-
     else:
-        st.info("No marks entries available to delete.")
+        st.info("No students registered yet.")
