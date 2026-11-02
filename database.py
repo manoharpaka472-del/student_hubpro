@@ -9,11 +9,12 @@ DATABASE_PATH = "students.db"
 def get_connection():
     conn = sqlite3.connect(DATABASE_PATH)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
     return conn
 
 
 # ==========================================
-# 2. SCHEMA INITIALIZATION & AUTO-MIGRATIONS
+# 2. SCHEMA INITIALIZATION (EMPTY & FRESH)
 # ==========================================
 
 def ensure_extended_schema():
@@ -32,12 +33,6 @@ def ensure_extended_schema():
                 password TEXT DEFAULT 'student123'
             )
         """)
-
-        # Verify password column exists
-        cursor.execute("PRAGMA table_info(students)")
-        existing_cols = [row[1] for row in cursor.fetchall()]
-        if "password" not in existing_cols:
-            cursor.execute("ALTER TABLE students ADD COLUMN password TEXT DEFAULT 'student123'")
 
         # 2. Courses Table
         cursor.execute("""
@@ -152,10 +147,7 @@ def ensure_extended_schema():
 
         conn.commit()
 
-# Alias for backwards compatibility
-init_fresh_database = ensure_extended_schema
-
-# Run schema creation on start
+# Run migrations immediately on start
 ensure_extended_schema()
 
 
@@ -213,11 +205,6 @@ def update_student(student_id, name, email, department, year):
 def delete_student(student_id):
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM marks WHERE student_id = ?", (student_id,))
-        cursor.execute("DELETE FROM attendance WHERE student_id = ?", (student_id,))
-        cursor.execute("DELETE FROM assignment_submissions WHERE student_id = ?", (student_id,))
-        cursor.execute("DELETE FROM fee_dues WHERE student_id = ?", (student_id,))
-        cursor.execute("DELETE FROM feedback WHERE student_id = ?", (student_id,))
         cursor.execute("DELETE FROM students WHERE id = ?", (student_id,))
         conn.commit()
 
@@ -232,7 +219,7 @@ def update_student_password(student_id, new_password):
 
 
 # ==========================================
-# 4. MARKS CRUD & DELETION
+# 4. MARKS CRUD & PERMANENT DELETE
 # ==========================================
 
 def delete_single_mark(mark_id):
