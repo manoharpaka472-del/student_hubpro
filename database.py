@@ -320,4 +320,71 @@ def mark_student_attendance(student_id, subject, date_str, status):
 
 def get_student_attendance_summary(student_id):
     with get_connection() as conn:
-        cursor
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT 
+                subject,
+                COUNT(*) as total_classes,
+                SUM(CASE WHEN status = 'Present' THEN 1 ELSE 0 END) as attended_classes
+            FROM attendance
+            WHERE student_id = ?
+            GROUP BY subject
+            ORDER BY subject
+            """,
+            (student_id,)
+        )
+        rows = cursor.fetchall()
+        return [dict(row) for row in rows]
+
+def get_student_attendance_records(student_id):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT date, subject, status
+            FROM attendance
+            WHERE student_id = ?
+            ORDER BY date DESC
+            """,
+            (student_id,)
+        )
+        rows = cursor.fetchall()
+        return [dict(row) for row in rows]
+
+
+# ==========================================
+# 8. ASSIGNMENTS & SUBMISSIONS
+# ==========================================
+
+def add_assignment(title, subject, department, deadline, description):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO assignments (title, subject, department, deadline, description)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (title.strip(), subject.strip(), department.strip(), str(deadline), description.strip())
+        )
+        conn.commit()
+
+def get_assignments_for_department(department):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM assignments WHERE department = ? OR department = 'All' ORDER BY id DESC",
+            (department,)
+        )
+        rows = cursor.fetchall()
+        return [dict(row) for row in rows]
+
+def submit_assignment(assignment_id, student_id, submission_link):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO assignment_submissions (assignment_id, student_id, submission_link)
+            VALUES (?, ?, ?)
+            ON CONFLICT(assignment_id, student_id)
+            DO UPDATE SET submission_link = excluded.submission_link, submitted_at = CURRENT
