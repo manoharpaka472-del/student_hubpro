@@ -4,14 +4,15 @@ from database import (
     get_all_students, 
     get_connection, 
     delete_single_mark, 
-    delete_all_marks_for_student
+    delete_all_marks_for_student,
+    update_single_mark
 )
 
 st.title("📝 Marks & Examination Records")
-st.markdown("<p style='color: #94a3b8;'>Assign, view, export, and delete academic marks.</p>", unsafe_allow_html=True)
+st.markdown("<p style='color: #94a3b8;'>Assign, view, export, update, and delete academic marks.</p>", unsafe_allow_html=True)
 st.divider()
 
-tab_add, tab_view, tab_delete = st.tabs(["➕ Assign Marks", "📋 Academic Records", "🗑️ Delete Marks"])
+tab_add, tab_view, tab_manage = st.tabs(["➕ Assign Marks", "📋 Academic Records", "✏️ Update / Delete Marks"])
 
 # ==========================================
 # TAB 1: ASSIGN / ADD MARKS
@@ -85,11 +86,10 @@ with tab_view:
         st.info("No academic marks recorded in the database yet.")
 
 # ==========================================
-# TAB 3: PERMANENTLY DELETE MARKS
+# TAB 3: UPDATE OR PERMANENTLY DELETE MARKS
 # ==========================================
-with tab_delete:
-    st.subheader("🗑️ Permanently Remove Marks")
-    st.warning("⚠️ Deleting marks will remove them permanently from the database and update student transcripts immediately.")
+with tab_manage:
+    st.subheader("✏️ Update or Remove Marks")
 
     with get_connection() as conn:
         marks_with_ids = pd.read_sql_query("""
@@ -107,37 +107,51 @@ with tab_delete:
         """, conn)
 
     if not marks_with_ids.empty:
-        col_single, col_bulk = st.columns(2)
+        options = {
+            f"{r['roll_number']} | {r['name']} — {r['subject']} ({r['marks']} marks) [ID: {r['mark_id']}]": int(r['mark_id'])
+            for _, r in marks_with_ids.iterrows()
+        }
 
-        # 1. Delete a Single Mark Record
-        with col_single:
-            st.markdown("##### 1. Delete Single Subject Entry")
-            options = {
-                f"{r['roll_number']} | {r['name']} — {r['subject']} ({r['marks']} marks) [ID: {r['mark_id']}]": int(r['mark_id'])
-                for _, r in marks_with_ids.iterrows()
-            }
-            selected_option = st.selectbox("Select Record to Delete:", list(options.keys()))
-            selected_mark_id = options[selected_option]
+        col_edit, col_del = st.columns(2)
+
+        # 1. Edit / Change Score
+        with col_edit:
+            st.markdown("##### 1. Edit / Correct Marks")
+            sel_edit_label = st.selectbox("Select Record to Change:", list(options.keys()), key="edit_mark_select")
+            sel_edit_id = options[sel_edit_label]
+            new_val = st.number_input("New Score (0 - 100)", min_value=0.0, max_value=100.0, value=80.0, step=1.0)
+            
+            if st.button("💾 Update Score", use_container_width=True):
+                update_single_mark(sel_edit_id, new_val)
+                st.success("Marks updated successfully!")
+                st.rerun()
+
+        # 2. Delete Single Record
+        with col_del:
+            st.markdown("##### 2. Permanently Delete Mark")
+            sel_del_label = st.selectbox("Select Record to Delete:", list(options.keys()), key="del_mark_select")
+            sel_del_id = options[sel_del_label]
 
             if st.button("🗑️ Delete Selected Entry", use_container_width=True):
-                delete_single_mark(selected_mark_id)
-                st.success("Record deleted permanently from database!")
+                delete_single_mark(sel_del_id)
+                st.success("Record permanently removed!")
                 st.rerun()
 
-        # 2. Clear All Marks for a Specific Student
-        with col_bulk:
-            st.markdown("##### 2. Clear All Marks for a Student")
-            student_options = {
-                f"{s['roll_number']} - {s['name']} ({s['department']})": int(s["student_id"])
-                for _, s in marks_with_ids.drop_duplicates(subset=["student_id"]).iterrows()
-            }
-            selected_st_label = st.selectbox("Select Student:", list(student_options.keys()))
-            target_student_id = student_options[selected_st_label]
+        st.divider()
 
-            if st.button("⚠️ Clear All Marks for Selected Student", use_container_width=True):
-                delete_all_marks_for_student(target_student_id)
-                st.success("All mark records permanently deleted!")
-                st.rerun()
+        # 3. Clear All Marks for Student
+        st.markdown("##### 3. Clear All Marks for a Specific Student")
+        student_options = {
+            f"{s['roll_number']} - {s['name']} ({s['department']})": int(s["student_id"])
+            for _, s in marks_with_ids.drop_duplicates(subset=["student_id"]).iterrows()
+        }
+        selected_st_label = st.selectbox("Select Student:", list(student_options.keys()), key="clear_all_st_select")
+        target_student_id = student_options[selected_st_label]
+
+        if st.button("⚠️ Clear All Marks for This Student", use_container_width=True):
+            delete_all_marks_for_student(target_student_id)
+            st.success("All marks for the student have been cleared!")
+            st.rerun()
 
     else:
-        st.info("No marks entries available to delete.")
+        st.info("No marks entries available to edit or delete.")
