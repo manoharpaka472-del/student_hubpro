@@ -44,13 +44,13 @@ st.set_page_config(
 st.session_state["_logout_rendered"] = False
 
 # ==========================================
-# NEW PALETTE: OBSIDIAN INDIGO & NEON CYAN BUTTONS
+# MULTI-COLOR BUTTON SYSTEM & COSMIC BACKGROUND
 # ==========================================
 st.markdown("""
 <style>
-    /* Deep Obsidian & Midnight Indigo Gradient Canvas */
+    /* Deep Cosmic Radial Mesh Background */
     .stApp {
-        background: radial-gradient(circle at 15% 15%, #0f172a 0%, #090d16 50%, #030712 100%) !important;
+        background: radial-gradient(circle at 15% 15%, #0f1c3f 0%, #080d1a 50%, #03060f 100%) !important;
         background-attachment: fixed !important;
         color: #f8fafc !important;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
@@ -61,54 +61,136 @@ st.markdown("""
         color: #ffffff !important;
         font-weight: 800 !important;
         letter-spacing: -0.5px;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
     }
     p, span, label, .stMarkdown {
-        color: #e2e8f0 !important;
+        color: #cbd5e1 !important;
     }
 
     /* Glassmorphism Dark Sidebar */
     [data-testid="stSidebar"] {
-        background: rgba(9, 13, 22, 0.95) !important;
+        background: rgba(8, 13, 26, 0.95) !important;
         backdrop-filter: blur(16px) !important;
-        border-right: 1px solid rgba(14, 165, 233, 0.2) !important;
+        border-right: 1px solid rgba(56, 189, 248, 0.25) !important;
     }
     [data-testid="stSidebar"] * {
         color: #f1f5f9 !important;
     }
 
-    /* Neon Cyber Cyan 3D Buttons */
+    /* Base 3D Tactile Button Settings */
     .stButton>button {
         width: 100%;
-        background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #06b6d4 100%) !important;
         color: #ffffff !important;
         font-weight: 700 !important;
         font-size: 14px !important;
-        border: 1px solid rgba(125, 211, 252, 0.5) !important;
         border-radius: 12px !important;
         padding: 12px 18px !important;
         margin-bottom: 8px !important;
-        box-shadow: 0 6px 18px -2px rgba(14, 165, 233, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
         transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
         transform: perspective(600px) translateZ(0);
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
     }
     .stButton>button:hover {
-        background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%) !important;
-        color: #ffffff !important;
         transform: perspective(600px) translateY(-3px) scale(1.02);
-        box-shadow: 0 12px 26px -2px rgba(16, 185, 129, 0.6), 0 0 18px rgba(6, 182, 212, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
-        border-color: #a7f3d0 !important;
+        color: #ffffff !important;
+        border-color: #ffffff !important;
     }
     .stButton>button:active {
         transform: perspective(600px) translateY(2px) scale(0.98);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8) !important;
     }
 
-    /* Translucent Obsidian Glass Cards */
+    /* 1. Sapphire / Royal Blue Button Style */
+    .btn-blue>div>button {
+        background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+        border: 1px solid rgba(147, 197, 253, 0.5) !important;
+        box-shadow: 0 6px 18px -2px rgba(37, 99, 235, 0.6) !important;
+    }
+    .btn-blue>div>button:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%) !important;
+        box-shadow: 0 10px 24px -2px rgba(56, 189, 248, 0.7) !important;
+    }
+
+    /* 2. Emerald Green Button Style */
+    .btn-green>div>button {
+        background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+        border: 1px solid rgba(110, 231, 183, 0.5) !important;
+        box-shadow: 0 6px 18px -2px rgba(16, 185, 129, 0.6) !important;
+    }
+    .btn-green>div>button:hover {
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%) !important;
+        box-shadow: 0 10px 24px -2px rgba(52, 211, 153, 0.7) !important;
+    }
+
+    /* 3. Amber / Sunset Orange Button Style */
+    .btn-amber>div>button {
+        background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%) !important;
+        border: 1px solid rgba(253, 230, 138, 0.5) !important;
+        box-shadow: 0 6px 18px -2px rgba(245, 158, 11, 0.6) !important;
+    }
+    .btn-amber>div>button:hover {
+        background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%) !important;
+        box-shadow: 0 10px 24px -2px rgba(251, 191, 36, 0.7) !important;
+    }
+
+    /* 4. Violet / Purple Button Style */
+    .btn-purple>div>button {
+        background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%) !important;
+        border: 1px solid rgba(221, 214, 254, 0.5) !important;
+        box-shadow: 0 6px 18px -2px rgba(139, 92, 246, 0.6) !important;
+    }
+    .btn-purple>div>button:hover {
+        background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%) !important;
+        box-shadow: 0 10px 24px -2px rgba(167, 139, 250, 0.7) !important;
+    }
+
+    /* 5. Electric Cyan Button Style */
+    .btn-cyan>div>button {
+        background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%) !important;
+        border: 1px solid rgba(165, 243, 252, 0.5) !important;
+        box-shadow: 0 6px 18px -2px rgba(6, 182, 212, 0.6) !important;
+    }
+    .btn-cyan>div>button:hover {
+        background: linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%) !important;
+        box-shadow: 0 10px 24px -2px rgba(34, 211, 238, 0.7) !important;
+    }
+
+    /* 6. Rose / Pink Button Style */
+    .btn-pink>div>button {
+        background: linear-gradient(135deg, #db2777 0%, #f43f5e 100%) !important;
+        border: 1px solid rgba(254, 205, 211, 0.5) !important;
+        box-shadow: 0 6px 18px -2px rgba(244, 63, 94, 0.6) !important;
+    }
+    .btn-pink>div>button:hover {
+        background: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%) !important;
+        box-shadow: 0 10px 24px -2px rgba(251, 113, 133, 0.7) !important;
+    }
+
+    /* 7. Crimson / Red Button Style */
+    .btn-red>div>button {
+        background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%) !important;
+        border: 1px solid rgba(254, 202, 202, 0.5) !important;
+        box-shadow: 0 6px 18px -2px rgba(220, 38, 38, 0.6) !important;
+    }
+    .btn-red>div>button:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+        box-shadow: 0 10px 24px -2px rgba(239, 68, 68, 0.7) !important;
+    }
+
+    /* 8. Indigo / Iris Button Style */
+    .btn-indigo>div>button {
+        background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%) !important;
+        border: 1px solid rgba(199, 210, 254, 0.5) !important;
+        box-shadow: 0 6px 18px -2px rgba(99, 102, 241, 0.6) !important;
+    }
+    .btn-indigo>div>button:hover {
+        background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%) !important;
+        box-shadow: 0 10px 24px -2px rgba(129, 140, 248, 0.7) !important;
+    }
+
+    /* Glass Panels */
     .figma-card {
-        background: rgba(15, 23, 42, 0.75) !important;
-        border: 1px solid rgba(14, 165, 233, 0.25) !important;
+        background: rgba(15, 23, 42, 0.8) !important;
+        border: 1px solid rgba(56, 189, 248, 0.25) !important;
         border-radius: 16px !important;
         padding: 22px !important;
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5) !important;
@@ -118,8 +200,8 @@ st.markdown("""
 
     /* Metric Cards */
     div[data-testid="stMetric"] {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95)) !important;
-        border: 1px solid rgba(14, 165, 233, 0.35) !important;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)) !important;
+        border: 1px solid rgba(56, 189, 248, 0.35) !important;
         padding: 20px 22px !important;
         border-radius: 16px !important;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
@@ -139,10 +221,10 @@ st.markdown("""
         text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
     }
 
-    /* Alert / Action Required Card */
+    /* Action Required Box */
     .action-required-card {
-        background: rgba(124, 45, 18, 0.4) !important;
-        border: 1px solid rgba(251, 146, 60, 0.5) !important;
+        background: rgba(124, 45, 18, 0.45) !important;
+        border: 1px solid rgba(251, 146, 60, 0.6) !important;
         border-radius: 12px;
         padding: 16px;
         margin-top: 15px;
@@ -177,22 +259,22 @@ st.markdown("""
         margin-right: 14px;
     }
 
-    /* Banner Highlight Card */
+    /* Big Institutional Banner */
     .institutional-banner {
-        background: linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #06b6d4 100%);
+        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #06b6d4 100%);
         border: 1px solid rgba(255, 255, 255, 0.25);
         border-radius: 16px;
         padding: 32px;
         color: #ffffff;
         margin-top: 24px;
-        box-shadow: 0 12px 32px rgba(2, 132, 199, 0.4);
+        box-shadow: 0 12px 32px rgba(37, 99, 235, 0.45);
     }
 
-    /* Inputs, Selectboxes, & Textarea overrides */
+    /* Inputs, Selectboxes, & Textarea */
     .stTextInput input, .stSelectbox select, .stTextArea textarea, .stDateInput input, .stNumberInput input {
         background-color: rgba(15, 23, 42, 0.9) !important;
         color: #f8fafc !important;
-        border: 1px solid rgba(14, 165, 233, 0.3) !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
         border-radius: 10px !important;
     }
     .stTextInput input:focus, .stSelectbox select:focus, .stTextArea textarea:focus {
@@ -212,7 +294,7 @@ if "current_page" not in st.session_state:
 
 
 # ==========================================
-# SIDEBAR NAVIGATION
+# SIDEBAR NAVIGATION WITH UNIQUE STYLED BUTTONS
 # ==========================================
 logout_button()
 
@@ -224,43 +306,70 @@ st.sidebar.markdown("""
 """, unsafe_allow_html=True)
 
 if user_role == "admin":
-    st.sidebar.caption("MAIN CONTROLS")
+    st.sidebar.caption("FACULTY & ADMIN SUITE")
 
+    # 1. Executive Dashboard (Blue)
+    st.sidebar.markdown('<div class="btn-blue">', unsafe_allow_html=True)
     if st.sidebar.button("📊  Executive Dashboard", use_container_width=True):
         st.session_state.current_page = "Dashboard"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 2. Student Directory (Green)
+    st.sidebar.markdown('<div class="btn-green">', unsafe_allow_html=True)
     if st.sidebar.button("👨‍🎓  Student Directory", use_container_width=True):
         st.session_state.current_page = "Students"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 3. Attendance Registry (Amber)
+    st.sidebar.markdown('<div class="btn-amber">', unsafe_allow_html=True)
     if st.sidebar.button("📅  Attendance Registry", use_container_width=True):
         st.session_state.current_page = "Attendance"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 4. Course Results & Marks (Purple)
+    st.sidebar.markdown('<div class="btn-purple">', unsafe_allow_html=True)
     if st.sidebar.button("📚  Course Results & Marks", use_container_width=True):
         st.session_state.current_page = "Courses & Marks"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 5. Assignments Hub (Cyan)
+    st.sidebar.markdown('<div class="btn-cyan">', unsafe_allow_html=True)
     if st.sidebar.button("📂  Assignments Hub", use_container_width=True):
         st.session_state.current_page = "Assignments"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 6. Timetable Scheduler (Pink)
+    st.sidebar.markdown('<div class="btn-pink">', unsafe_allow_html=True)
     if st.sidebar.button("🗓️  Lecture Timetable", use_container_width=True):
         st.session_state.current_page = "Timetable"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 7. Fee Management (Amber)
+    st.sidebar.markdown('<div class="btn-amber">', unsafe_allow_html=True)
     if st.sidebar.button("💳  Fee Management", use_container_width=True):
         st.session_state.current_page = "Fees"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 8. Course Evaluations (Indigo)
+    st.sidebar.markdown('<div class="btn-indigo">', unsafe_allow_html=True)
     if st.sidebar.button("⭐  Course Evaluations", use_container_width=True):
         st.session_state.current_page = "Feedback"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
-    if st.sidebar.button("📢  Announcements", use_container_width=True):
+    # 9. Campus Announcements (Red)
+    st.sidebar.markdown('<div class="btn-red">', unsafe_allow_html=True)
+    if st.sidebar.button("📢  Campus Announcements", use_container_width=True):
         st.session_state.current_page = "Announcements"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
     st.sidebar.divider()
     try:
@@ -281,41 +390,68 @@ else:
     st.sidebar.markdown(f"**{student.get('name', 'Student')}**")
     st.sidebar.caption(f"Roll: `{student.get('roll_number', '')}`")
 
+    # 1. Profile (Blue)
+    st.sidebar.markdown('<div class="btn-blue">', unsafe_allow_html=True)
     if st.sidebar.button("🎓  Dashboard & Profile", use_container_width=True):
         st.session_state.current_page = "My Academic Profile"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 2. Attendance (Amber)
+    st.sidebar.markdown('<div class="btn-amber">', unsafe_allow_html=True)
     if st.sidebar.button("📅  My Attendance Status", use_container_width=True):
         st.session_state.current_page = "My Attendance"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 3. Coursework (Cyan)
+    st.sidebar.markdown('<div class="btn-cyan">', unsafe_allow_html=True)
     if st.sidebar.button("📂  Coursework & Projects", use_container_width=True):
         st.session_state.current_page = "Student Assignments"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 4. Schedule (Pink)
+    st.sidebar.markdown('<div class="btn-pink">', unsafe_allow_html=True)
     if st.sidebar.button("🗓️  Weekly Schedule", use_container_width=True):
         st.session_state.current_page = "Student Timetable"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 5. Fees (Amber)
+    st.sidebar.markdown('<div class="btn-amber">', unsafe_allow_html=True)
     if st.sidebar.button("💳  Fee Clearance", use_container_width=True):
         st.session_state.current_page = "Student Fees"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 6. Transcript (Purple)
+    st.sidebar.markdown('<div class="btn-purple">', unsafe_allow_html=True)
     if st.sidebar.button("📝  Grades & Transcript", use_container_width=True):
         st.session_state.current_page = "My Marks"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 7. Toolkit (Green)
+    st.sidebar.markdown('<div class="btn-green">', unsafe_allow_html=True)
     if st.sidebar.button("🛠️  Academic Toolkit (CGPA)", use_container_width=True):
         st.session_state.current_page = "Academic Tools"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 8. Feedback (Indigo)
+    st.sidebar.markdown('<div class="btn-indigo">', unsafe_allow_html=True)
     if st.sidebar.button("⭐  Course Evaluation", use_container_width=True):
         st.session_state.current_page = "Student Feedback"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+    # 9. Password (Red)
+    st.sidebar.markdown('<div class="btn-red">', unsafe_allow_html=True)
     if st.sidebar.button("🔒  Security & Password", use_container_width=True):
         st.session_state.current_page = "Account Security"
         st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_page(filename_variations):
@@ -377,7 +513,7 @@ if user_role == "admin":
                 latest_student = students[-1]
                 st.markdown(f"""
                 <div class="activity-row">
-                    <div class="activity-icon" style="background-color: rgba(14, 165, 233, 0.2); color: #38bdf8;">👤</div>
+                    <div class="activity-icon" style="background-color: rgba(37, 99, 235, 0.2); color: #60a5fa;">👤</div>
                     <div>
                         <div style="font-size: 14px; font-weight: 600; color: #f8fafc;">New student enrolled</div>
                         <div style="font-size: 12px; color: #94a3b8;">{latest_student['name']} ({latest_student['roll_number']}) — {latest_student['department']} department</div>
@@ -442,17 +578,23 @@ if user_role == "admin":
                 <h3 style="font-size: 17px; font-weight: 700; color: #ffffff; margin: 0 0 14px 0;">Quick Actions</h3>
             """, unsafe_allow_html=True)
 
+            st.markdown('<div class="btn-green">', unsafe_allow_html=True)
             if st.button("➕ Add New Student", key="qa_add_st", use_container_width=True):
                 st.session_state.current_page = "Students"
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
+            st.markdown('<div class="btn-amber">', unsafe_allow_html=True)
             if st.button("📅 Mark Class Attendance", key="qa_att", use_container_width=True):
                 st.session_state.current_page = "Attendance"
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
+            st.markdown('<div class="btn-cyan">', unsafe_allow_html=True)
             if st.button("📂 Create Assignment", key="qa_assign", use_container_width=True):
                 st.session_state.current_page = "Assignments"
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
             st.markdown("""
                 <div class="action-required-card">
@@ -509,7 +651,11 @@ if user_role == "admin":
                     c1.markdown(f"**{s['name']}** (`{s['roll_number']}`) — *{s['department']}*")
                     status_dict[s["id"]] = c2.checkbox("Present", value=True, key=f"att_{s['id']}")
                 
-                if st.form_submit_button("Save Attendance Session", use_container_width=True):
+                st.markdown('<div class="btn-green">', unsafe_allow_html=True)
+                submit_att = st.form_submit_button("Save Attendance Session", use_container_width=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+                if submit_att:
                     date_str = att_date.strftime("%Y-%m-%d")
                     for s_id, is_present in status_dict.items():
                         mark_student_attendance(s_id, subject_name.strip(), date_str, "Present" if is_present else "Absent")
@@ -528,7 +674,12 @@ if user_role == "admin":
                 a_dept = st.selectbox("Target Department", ["All", "Mechanical", "Computer Science", "Electrical", "Civil", "Electronics", "Information Technology"])
                 a_due = st.date_input("Deadline")
                 a_desc = st.text_area("Instructions")
-                if st.form_submit_button("Post Assignment", use_container_width=True):
+                
+                st.markdown('<div class="btn-cyan">', unsafe_allow_html=True)
+                post_btn = st.form_submit_button("Post Assignment", use_container_width=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+                if post_btn:
                     if a_title and a_sub and a_desc:
                         add_assignment(a_title, a_sub, a_dept, str(a_due), a_desc)
                         st.success("Assignment published!")
@@ -564,7 +715,12 @@ if user_role == "admin":
                 t_slot = st.text_input("Time Slot (e.g. 09:30 AM - 10:30 AM)")
                 t_sub = st.text_input("Subject")
                 t_room = st.text_input("Room No", placeholder="e.g. ME-204")
-            if st.form_submit_button("Add Schedule Entry", use_container_width=True):
+            
+            st.markdown('<div class="btn-pink">', unsafe_allow_html=True)
+            tt_submit = st.form_submit_button("Add Schedule Entry", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            if tt_submit:
                 if t_slot and t_sub and t_room:
                     add_timetable_entry(t_dept, t_year, t_day, t_slot, t_sub, t_room)
                     st.success("Schedule slot saved!")
@@ -580,7 +736,12 @@ if user_role == "admin":
                 f_type = st.selectbox("Fee Type", ["Semester Tuition", "Exam Fee", "Library Due", "Hostel Fee"])
                 f_amt = st.number_input("Amount (INR)", min_value=100.0, step=500.0, value=25000.0)
                 f_due = st.date_input("Due Date")
-                if st.button("Generate Invoice", use_container_width=True):
+                
+                st.markdown('<div class="btn-amber">', unsafe_allow_html=True)
+                gen_inv = st.button("Generate Invoice", use_container_width=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+                if gen_inv:
                     add_fee_due(st_map[sel], f_type, f_amt, str(f_due))
                     st.success("Invoice generated!")
         with tab2:
@@ -601,7 +762,12 @@ if user_role == "admin":
         with st.form("notice_form"):
             n_t = st.text_input("Title")
             n_m = st.text_area("Message")
-            if st.form_submit_button("Broadcast Notice", use_container_width=True):
+
+            st.markdown('<div class="btn-red">', unsafe_allow_html=True)
+            notice_submit = st.form_submit_button("Broadcast Notice", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            if notice_submit:
                 if n_t and n_m:
                     add_announcement(n_t, n_m)
                     st.success("Broadcast published!")
@@ -703,7 +869,11 @@ else:
                     st.write(a['description'])
                     with st.form(f"sub_{a['id']}"):
                         lnk = st.text_input("Submission URL (Drive / GitHub)")
-                        if st.form_submit_button("Submit Work"):
+                        st.markdown('<div class="btn-cyan">', unsafe_allow_html=True)
+                        sub_btn = st.form_submit_button("Submit Work")
+                        st.markdown('</div>', unsafe_allow_html=True)
+
+                        if sub_btn:
                             submit_assignment(a['id'], student_id, lnk)
                             st.success("Submitted successfully!")
         else:
@@ -767,7 +937,12 @@ else:
             c_name = st.text_input("Course / Instructor")
             r = st.slider("Rating", 1, 5, 5)
             c = st.text_area("Feedback Comments")
-            if st.form_submit_button("Submit Anonymous Feedback"):
+
+            st.markdown('<div class="btn-indigo">', unsafe_allow_html=True)
+            fb_submit = st.form_submit_button("Submit Anonymous Feedback")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            if fb_submit:
                 submit_feedback(student_id, c_name, r, c)
                 st.success("Feedback submitted!")
 
@@ -777,7 +952,12 @@ else:
             old_p = st.text_input("Current Password", type="password")
             new_p = st.text_input("New Password", type="password")
             con_p = st.text_input("Confirm Password", type="password")
-            if st.form_submit_button("Update Password"):
+
+            st.markdown('<div class="btn-red">', unsafe_allow_html=True)
+            pwd_submit = st.form_submit_button("Update Password")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            if pwd_submit:
                 curr = (student.get("password") or "student123").strip()
                 if old_p.strip() != curr:
                     st.error("Current password incorrect.")
